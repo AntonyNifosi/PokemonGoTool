@@ -97,6 +97,8 @@ class APIServices {
   static Image getArtwork(int pokemonId) {
     return Image.network(
         "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/$pokemonId.png");
+    /*return Image.network(
+        "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/$pokemonId.png");*/
   }
 
   static Future<List<Pokemon>> getPokemonList() async {
