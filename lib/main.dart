@@ -70,6 +70,8 @@ class _PokemonPageState extends State<PokemonPage> {
               if (snapshot.hasData) {
                 return Expanded(
                   child: GridView(
+                      addAutomaticKeepAlives: true,
+                      cacheExtent: 10,
                       gridDelegate:
                           const SliverGridDelegateWithMaxCrossAxisExtent(
                         maxCrossAxisExtent: 300,
@@ -102,19 +104,47 @@ class APIServices {
     var pokemonsReleasedUrl =
         Uri.https("pogoapi.net", "/api/v1/released_pokemon.json");
 
-    var response = await http.get(pokemonsReleasedUrl);
+    var pokemonsShinyUrl =
+        Uri.https("pogoapi.net", "/api/v1/shiny_pokemon.json");
 
-    if (response.statusCode == 200) {
-      var jsonResponse =
-          convert.jsonDecode(response.body) as Map<String, dynamic>;
+    var pokemonsMythicUrl =
+        Uri.https("pogoapi.net", "/api/v1/pokemon_rarity.json");
 
-      for (var pokemon in jsonResponse.values) {
-        print("Pokemon name : ${pokemon["name"]} - Id : ${pokemon["id"]}");
-        Image artwork = getArtwork(pokemon["id"]);
-        pokemonList.add(Pokemon(pokemon["id"], pokemon["name"], artwork));
+    var responsePokemonsList = await http.get(pokemonsReleasedUrl);
+    var responsePokemonsShinyList = await http.get(pokemonsShinyUrl);
+    var responsePokemonsMythicList = await http.get(pokemonsMythicUrl);
+
+    if (responsePokemonsList.statusCode == 200) {
+      if (responsePokemonsShinyList.statusCode == 200) {
+        var jsonPokemonsListResponse = convert
+            .jsonDecode(responsePokemonsList.body) as Map<String, dynamic>;
+        var jsonPokemonsShinyListResponse = convert
+            .jsonDecode(responsePokemonsShinyList.body) as Map<String, dynamic>;
+        var jsonPokemonsMythicListResponse =
+            convert.jsonDecode(responsePokemonsMythicList.body)
+                as Map<String, dynamic>;
+
+        final pokemonRarityMap = Map.fromEntries(jsonPokemonsMythicListResponse
+            .values
+            .expand((x) => x)
+            .map((x) => MapEntry(x['pokemon_id'], x['rarity'])));
+
+        for (var pokemon in jsonPokemonsListResponse.values) {
+          bool hasShinyVersion = (jsonPokemonsShinyListResponse
+              .containsKey(pokemon["id"].toString()));
+
+          bool isMythic = pokemonRarityMap[pokemon["id"]] == "Mythic";
+          Image artwork = getArtwork(pokemon["id"]);
+
+          pokemonList.add(Pokemon(pokemon["id"], pokemon["name"], artwork,
+              hasShinyVersion, isMythic));
+        }
+      } else {
+        print(
+            'Request failed with status: ${responsePokemonsList.statusCode}.');
       }
     } else {
-      print('Request failed with status: ${response.statusCode}.');
+      print('Request failed with status: ${responsePokemonsList.statusCode}.');
     }
     return pokemonList;
   }
@@ -123,13 +153,14 @@ class APIServices {
 class Pokemon {
   int id;
   String name;
-  String cathegory = "";
+  String category = "";
   Image artwork;
   bool hasShinyVersion = false;
-  bool hasLuckyVersion = false;
+  bool isMythic = false;
   bool isShiny = false;
   bool isLucky = false;
-  Pokemon(this.id, this.name, this.artwork);
+  Pokemon(
+      this.id, this.name, this.artwork, this.hasShinyVersion, this.isMythic);
 }
 
 class PokemonCard extends StatelessWidget {
@@ -139,24 +170,38 @@ class PokemonCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      child: Column(children: [
-        Text(pokemon.name),
-        Expanded(
-          child: pokemon.artwork,
-        ),
-        Row(
-          children: [
-            IconButton(
-              onPressed: () {},
-              icon: const Icon(Icons.star),
+      child: Padding(
+        padding:
+            const EdgeInsets.only(left: 10.0, right: 10.0, top: 5, bottom: 5),
+        child: Column(children: [
+          Row(children: [
+            Text(pokemon.name, style: const TextStyle(fontSize: 15)),
+            Spacer(),
+            Text("# ${pokemon.id.toString()}",
+                style: const TextStyle(fontSize: 15))
+          ]),
+          Expanded(
+            child: pokemon.artwork,
+          ),
+          SizedBox(
+            height: 40,
+            child: Row(
+              children: [
+                if (pokemon.hasShinyVersion)
+                  IconButton(
+                    onPressed: () {},
+                    icon: const Icon(Icons.star),
+                  ),
+                if (!pokemon.isMythic)
+                  IconButton(
+                    onPressed: () {},
+                    icon: const Icon(Icons.bubble_chart_rounded),
+                  )
+              ],
             ),
-            IconButton(
-              onPressed: () {},
-              icon: const Icon(Icons.account_circle_outlined),
-            )
-          ],
-        )
-      ]),
+          )
+        ]),
+      ),
     );
   }
 }

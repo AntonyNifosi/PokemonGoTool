@@ -1,3 +1,5 @@
-# pokegotool
+# Pokemon Go Tool
 
-A new Flutter project.
+## Track all your shiny and lucky Pokemons
+
+
