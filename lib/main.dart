@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
@@ -36,12 +37,15 @@ class PokemonPage extends StatefulWidget {
 }
 
 class _PokemonPageState extends State<PokemonPage> {
-  late Future<List<Pokemon>> pokemonsList;
+  late Future<List<Pokemon>> pokemonsFullList;
+  late List<Pokemon> pokemonsDisplayedList;
+  TextEditingController textController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    pokemonsList = APIServices.getPokemonList();
+    pokemonsFullList = APIServices.getPokemonList();
+    pokemonsFullList.then((value) => pokemonsDisplayedList = value);
   }
 
   @override
@@ -57,31 +61,53 @@ class _PokemonPageState extends State<PokemonPage> {
           elevation: 10,
         ),
         body: Column(children: [
-          ElevatedButton(
-              onPressed: () {
-                setState(() {
-                  pokemonsList = APIServices.getPokemonList();
-                });
-              },
-              child: const Text("Get Pokemon List")),
+          Row(
+            children: [
+              ElevatedButton(
+                  onPressed: () {
+                    setState(() {
+                      pokemonsFullList = APIServices.getPokemonList();
+                      pokemonsFullList
+                          .then((value) => pokemonsDisplayedList = value);
+                    });
+                  },
+                  child: const Text("Get Pokemon List")),
+              SizedBox(
+                width: 250,
+                child: TextField(
+                    decoration: const InputDecoration(
+                      border: OutlineInputBorder(),
+                      labelText: 'Search ...',
+                    ),
+                    onChanged: (String value) {
+                      setState(() {
+                        pokemonsFullList.then((pokeList) =>
+                            pokemonsDisplayedList = pokeList
+                                .where((pokemon) => pokemon.name
+                                    .toLowerCase()
+                                    .contains(value.toLowerCase()))
+                                .toList());
+                      });
+                    }),
+              ),
+            ],
+          ),
           FutureBuilder<List<Pokemon>>(
-            future: pokemonsList,
+            future: pokemonsFullList,
             builder: (context, snapshot) {
               if (snapshot.hasData) {
                 return Expanded(
-                  child: GridView(
-                      addAutomaticKeepAlives: true,
-                      cacheExtent: 10,
-                      gridDelegate:
-                          const SliverGridDelegateWithMaxCrossAxisExtent(
-                        maxCrossAxisExtent: 300,
-                      ),
-                      children: snapshot.data!
-                          .map(
-                            (e) => PokemonCard(e),
-                          )
-                          .toList()),
-                );
+                    child: GridView.builder(
+                        addAutomaticKeepAlives: true,
+                        cacheExtent: 10,
+                        gridDelegate:
+                            const SliverGridDelegateWithMaxCrossAxisExtent(
+                          maxCrossAxisExtent: 300,
+                        ),
+                        itemCount: pokemonsDisplayedList.length,
+                        itemBuilder: (BuildContext context, index) {
+                          return PokemonCard(pokemonsDisplayedList[index]);
+                        }));
               } else {
                 return const Text("NULL");
               }
