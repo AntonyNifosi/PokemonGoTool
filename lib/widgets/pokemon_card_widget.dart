@@ -45,13 +45,31 @@ class _PokemonCardState extends State<PokemonCard> {
                 const Spacer(),
                 if (widget.pokemon.hasShinyVersion)
                   IconButton(
-                    onPressed: () {},
-                    icon: const Icon(Icons.star),
+                    onPressed: () {
+                      setState(() {
+                        widget.pokemon.isShiny = !widget.pokemon.isShiny;
+                      });
+                      widget.onCardChange();
+                    },
+                    icon: widget.pokemon.isShiny
+                        ? const Icon(Icons.star,
+                            color: Color.fromARGB(255, 236, 163, 4))
+                        : const Icon(Icons.star),
                   ),
                 if (!widget.pokemon.isMythic)
                   IconButton(
-                    onPressed: () {},
-                    icon: const Icon(Icons.bubble_chart_rounded),
+                    onPressed: () {
+                      setState(() {
+                        widget.pokemon.isLucky = !widget.pokemon.isLucky;
+                      });
+                      widget.onCardChange();
+                    },
+                    icon: widget.pokemon.isLucky
+                        ? const Icon(
+                            Icons.bubble_chart_rounded,
+                            color: Colors.pink,
+                          )
+                        : const Icon(Icons.bubble_chart_rounded),
                   ),
               ],
             ),
