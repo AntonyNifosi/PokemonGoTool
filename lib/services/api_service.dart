@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pokegotool/services/json_service.dart';
 import '../models/pokemon.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert' as convert;
@@ -60,6 +61,12 @@ class APIServices {
     } else {
       print('Request failed with status: ${responsePokemonsList.statusCode}.');
     }
+
+    for (var pokemon in pokemonList) {
+      JSONService jsonService;
+      jsonService.pokemonToJson(pokemon);
+    }
+
     return pokemonList;
   }
 }
