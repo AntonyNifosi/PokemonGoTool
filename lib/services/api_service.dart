@@ -5,11 +5,9 @@ import 'package:http/http.dart' as http;
 import 'dart:convert' as convert;
 
 class APIServices {
-  static Image getArtwork(int pokemonId) {
-    return Image.network(
-      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/$pokemonId.png",
-      isAntiAlias: true,
-    );
+  static String getArtwork(int pokemonId) {
+    return 
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/$pokemonId.png";
     /*return Image.network(
         "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/$pokemonId.png");*/
   }
@@ -49,7 +47,7 @@ class APIServices {
               .containsKey(pokemon["id"].toString()));
 
           bool isMythic = pokemonRarityMap[pokemon["id"]] == "Mythic";
-          Image artwork = getArtwork(pokemon["id"]);
+          String artwork = getArtwork(pokemon["id"]);
 
           pokemonList.add(Pokemon(pokemon["id"], pokemon["name"], artwork,
               hasShinyVersion, isMythic));

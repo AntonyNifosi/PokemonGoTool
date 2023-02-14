@@ -25,7 +25,7 @@ class _PokemonCardState extends State<PokemonCard> {
                 style: const TextStyle(fontSize: 15))
           ]),
           Expanded(
-            child: widget.pokemon.artwork,
+            child: Image.network(widget.pokemon.artwork),
           ),
           SizedBox(
             height: 40,

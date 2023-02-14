@@ -9,7 +9,7 @@ part of 'pokemon.dart';
 Pokemon _$PokemonFromJson(Map<String, dynamic> json) => Pokemon(
       json['id'] as int,
       json['name'] as String,
-      Pokemon._fromJson(json['artwork'] as int),
+      json['artwork'] as String,
       json['hasShinyVersion'] as bool,
       json['isMythic'] as bool,
     )
@@ -22,7 +22,7 @@ Map<String, dynamic> _$PokemonToJson(Pokemon instance) => <String, dynamic>{
       'id': instance.id,
       'name': instance.name,
       'category': instance.category,
-      'artwork': Pokemon._toJson(instance.artwork),
+      'artwork': instance.artwork,
       'captured': instance.captured,
       'hasShinyVersion': instance.hasShinyVersion,
       'isMythic': instance.isMythic,
