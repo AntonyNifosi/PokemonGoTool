@@ -25,4 +25,5 @@ class Pokemon {
         "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/258.png",
         isAntiAlias: true,
       );
+  static Map<String, dynamic> toJson(Pokemon pokemon) => _$PokemonToJson(pokemon);
 }

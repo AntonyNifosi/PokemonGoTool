@@ -62,10 +62,7 @@ class APIServices {
       print('Request failed with status: ${responsePokemonsList.statusCode}.');
     }
 
-    for (var pokemon in pokemonList) {
-      JSONService jsonService;
-      jsonService.pokemonToJson(pokemon);
-    }
+    JSONService.pokemonsToJson(pokemonList);
 
     return pokemonList;
   }
