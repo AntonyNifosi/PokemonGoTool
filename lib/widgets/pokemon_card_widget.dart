@@ -56,7 +56,7 @@ class _PokemonCardState extends State<PokemonCard> {
                             color: Color.fromARGB(255, 236, 163, 4))
                         : const Icon(Icons.star),
                   ),
-                if (!widget.pokemon.isMythic)
+                if (widget.pokemon.category != "Mythic")
                   IconButton(
                     onPressed: () {
                       setState(() {

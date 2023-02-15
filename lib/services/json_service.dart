@@ -1,8 +1,8 @@
-import 'dart:convert';
+import 'dart:convert' as convert;
+import 'dart:core';
 import 'dart:io';
-
 import 'package:path_provider/path_provider.dart';
-import 'package:pokegotool/models/pokemon.dart';
+import '../models/pokemon.dart';
 
 class JSONService {
   static Future<String> get _localPath async {
@@ -26,6 +26,24 @@ class JSONService {
     final file = await _localFile;
 
     // Write the file
-    file.writeAsString(json.encode(jsonList));
+    var fileSave = await file.writeAsString(convert.json.encode(jsonList));
+    print("${fileSave.toString}");
+    print("Save fini");
+  }
+
+  static Future<List<Pokemon>> pokemonsFromJson() async {
+    List<Pokemon> pokemonList = [];
+    var localFile = await _localFile;
+    var jsonExist = await localFile.exists();
+
+    if (jsonExist) {
+      print("Je load avec le JSON");
+      var content = await localFile.readAsString();
+      var jsonContent = convert.jsonDecode(content) as List<dynamic>;
+      for (var jsonPokemon in jsonContent) {
+        pokemonList.add(Pokemon.fromJson(jsonPokemon));
+      }
+    }
+    return pokemonList;
   }
 }

@@ -9,12 +9,13 @@ class Pokemon {
   String artwork;
   bool captured = false;
   bool hasShinyVersion = false;
-  bool isMythic = false;
   bool isShiny = false;
   bool isLucky = false;
-  Pokemon(this.id, this.name, this.category, this.artwork, this.hasShinyVersion,
-      this.isMythic);
+  Pokemon(
+      this.id, this.name, this.category, this.artwork, this.hasShinyVersion);
 
   static Map<String, dynamic> toJson(Pokemon pokemon) =>
       _$PokemonToJson(pokemon);
+
+  static Pokemon fromJson(Map<String, dynamic> json) => _$PokemonFromJson(json);
 }

@@ -1,5 +1,8 @@
-import 'package:flutter/material.dart';
+// ignore_for_file: unused_import
 
+import 'package:flutter/material.dart';
+import 'package:pokegotool/services/pokemon_service.dart';
+import 'package:window_manager/window_manager.dart';
 import '../models/pokemon.dart';
 import '../services/api_service.dart';
 import '../widgets/pokemon_card_widget.dart';
@@ -11,7 +14,7 @@ class PokemonPage extends StatefulWidget {
   State<PokemonPage> createState() => _PokemonPageState();
 }
 
-class _PokemonPageState extends State<PokemonPage> {
+class _PokemonPageState extends State<PokemonPage> with WindowListener {
   late Future<List<Pokemon>> pokemonsFullList;
   late List<Pokemon> pokemonsDisplayedList;
   TextEditingController textController = TextEditingController();
@@ -26,9 +29,24 @@ class _PokemonPageState extends State<PokemonPage> {
 
   @override
   void initState() {
+    windowManager.addListener(this);
     super.initState();
-    pokemonsFullList = APIServices.getPokemonList();
+    pokemonsFullList = PokemonService.getPokemonList();
     pokemonsFullList.then((value) => pokemonsDisplayedList = value);
+  }
+
+  @override
+  void dispose() {
+    windowManager.removeListener(this);
+    super.dispose();
+    pokemonsFullList
+        .then((value) => PokemonService.savePokemons(pokemonsDisplayedList));
+  }
+
+  @override
+  void onWindowClose() {
+    pokemonsFullList
+        .then((value) => PokemonService.savePokemons(pokemonsDisplayedList));
   }
 
   @override
@@ -53,7 +71,8 @@ class _PokemonPageState extends State<PokemonPage> {
                       ElevatedButton(
                           onPressed: () {
                             setState(() {
-                              pokemonsFullList = APIServices.getPokemonList();
+                              pokemonsFullList =
+                                  PokemonService.getPokemonList();
                               pokemonsFullList.then(
                                   (value) => pokemonsDisplayedList = value);
                             });
@@ -179,7 +198,7 @@ class _PokemonPageState extends State<PokemonPage> {
                           : true);
                   shouldAppear = shouldAppear &&
                       (filterValues["Lucky Version Available"]!
-                          ? !pokemon.isMythic
+                          ? pokemon.category != "Mythic"
                           : true);
                   shouldAppear = shouldAppear &&
                       (filterValues["Shiny"]! ? pokemon.isShiny : true);
@@ -189,8 +208,12 @@ class _PokemonPageState extends State<PokemonPage> {
                   if (searchName.isNotEmpty) {
                     shouldAppear = shouldAppear &&
                         (pokemon.name
-                            .toLowerCase()
-                            .contains(searchName.toLowerCase()));
+                                .toLowerCase()
+                                .contains(searchName.toLowerCase()) ||
+                            pokemon.id
+                                .toString()
+                                .toLowerCase()
+                                .contains(searchName.toLowerCase()));
                   }
                   return shouldAppear;
                 },

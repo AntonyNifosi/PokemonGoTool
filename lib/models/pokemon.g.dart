@@ -12,7 +12,6 @@ Pokemon _$PokemonFromJson(Map<String, dynamic> json) => Pokemon(
       json['category'] as String,
       json['artwork'] as String,
       json['hasShinyVersion'] as bool,
-      json['isMythic'] as bool,
     )
       ..captured = json['captured'] as bool
       ..isShiny = json['isShiny'] as bool
@@ -25,7 +24,6 @@ Map<String, dynamic> _$PokemonToJson(Pokemon instance) => <String, dynamic>{
       'artwork': instance.artwork,
       'captured': instance.captured,
       'hasShinyVersion': instance.hasShinyVersion,
-      'isMythic': instance.isMythic,
       'isShiny': instance.isShiny,
       'isLucky': instance.isLucky,
     };

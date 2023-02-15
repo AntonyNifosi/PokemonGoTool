@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:pokegotool/services/json_service.dart';
 import '../models/pokemon.dart';
 import 'package:http/http.dart' as http;
@@ -11,7 +10,7 @@ class APIServices {
         "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/$pokemonId.png");*/
   }
 
-  static Future<List<Pokemon>> getPokemonList() async {
+  static Future<List<Pokemon>> getPokemonListFromAPI() async {
     List<Pokemon> pokemonList = [];
     var pokemonsReleasedUrl =
         Uri.https("pogoapi.net", "/api/v1/released_pokemon.json");
@@ -46,11 +45,10 @@ class APIServices {
               .containsKey(pokemon["id"].toString()));
 
           String category = pokemonRarityMap[pokemon["id"]];
-          bool isMythic = category == "Mythic";
           String artwork = getArtwork(pokemon["id"]);
 
           pokemonList.add(Pokemon(pokemon["id"], pokemon["name"], category,
-              artwork, hasShinyVersion, isMythic));
+              artwork, hasShinyVersion));
         }
       } else {
         print(
@@ -60,7 +58,7 @@ class APIServices {
       print('Request failed with status: ${responsePokemonsList.statusCode}.');
     }
 
-    JSONService.pokemonsToJson(pokemonList);
+    //JSONService.pokemonsToJson(pokemonList);
 
     return pokemonList;
   }

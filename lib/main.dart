@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:window_manager/window_manager.dart';
 import 'pages/pokemon_page.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await windowManager.ensureInitialized();
   runApp(const MyApp());
 }
 
