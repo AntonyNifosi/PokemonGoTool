@@ -9,11 +9,11 @@ part of 'pokemon.dart';
 Pokemon _$PokemonFromJson(Map<String, dynamic> json) => Pokemon(
       json['id'] as int,
       json['name'] as String,
+      json['category'] as String,
       json['artwork'] as String,
       json['hasShinyVersion'] as bool,
       json['isMythic'] as bool,
     )
-      ..category = json['category'] as String
       ..captured = json['captured'] as bool
       ..isShiny = json['isShiny'] as bool
       ..isLucky = json['isLucky'] as bool;

@@ -12,8 +12,9 @@ class Pokemon {
   bool isMythic = false;
   bool isShiny = false;
   bool isLucky = false;
-  Pokemon(
-      this.id, this.name, this.artwork, this.hasShinyVersion, this.isMythic);
+  Pokemon(this.id, this.name, this.category, this.artwork, this.hasShinyVersion,
+      this.isMythic);
 
-  static Map<String, dynamic> toJson(Pokemon pokemon) => _$PokemonToJson(pokemon);
+  static Map<String, dynamic> toJson(Pokemon pokemon) =>
+      _$PokemonToJson(pokemon);
 }

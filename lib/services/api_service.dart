@@ -6,8 +6,7 @@ import 'dart:convert' as convert;
 
 class APIServices {
   static String getArtwork(int pokemonId) {
-    return 
-      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/$pokemonId.png";
+    return "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/$pokemonId.png";
     /*return Image.network(
         "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/$pokemonId.png");*/
   }
@@ -46,11 +45,12 @@ class APIServices {
           bool hasShinyVersion = (jsonPokemonsShinyListResponse
               .containsKey(pokemon["id"].toString()));
 
-          bool isMythic = pokemonRarityMap[pokemon["id"]] == "Mythic";
+          String category = pokemonRarityMap[pokemon["id"]];
+          bool isMythic = category == "Mythic";
           String artwork = getArtwork(pokemon["id"]);
 
-          pokemonList.add(Pokemon(pokemon["id"], pokemon["name"], artwork,
-              hasShinyVersion, isMythic));
+          pokemonList.add(Pokemon(pokemon["id"], pokemon["name"], category,
+              artwork, hasShinyVersion, isMythic));
         }
       } else {
         print(
