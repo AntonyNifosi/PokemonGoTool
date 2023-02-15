@@ -19,6 +19,7 @@ class _PokemonPageState extends State<PokemonPage> with WindowListener {
   late List<Pokemon> pokemonsDisplayedList;
   TextEditingController textController = TextEditingController();
   Map<String, bool> filterValues = {
+    "Not Captured": false,
     "Captured": false,
     "Shiny Version Available": false,
     "Lucky Version Available": false,
@@ -39,14 +40,11 @@ class _PokemonPageState extends State<PokemonPage> with WindowListener {
   void dispose() {
     windowManager.removeListener(this);
     super.dispose();
-    pokemonsFullList
-        .then((value) => PokemonService.savePokemons(pokemonsDisplayedList));
   }
 
   @override
   void onWindowClose() {
-    pokemonsFullList
-        .then((value) => PokemonService.savePokemons(pokemonsDisplayedList));
+    pokemonsFullList.then((value) => PokemonService.savePokemons(value));
   }
 
   @override
@@ -192,6 +190,10 @@ class _PokemonPageState extends State<PokemonPage> with WindowListener {
                   bool shouldAppear = true;
                   shouldAppear =
                       filterValues["Captured"]! ? pokemon.captured : true;
+                  shouldAppear = shouldAppear &&
+                      (filterValues["Not Captured"]!
+                          ? !pokemon.captured
+                          : true);
                   shouldAppear = shouldAppear &&
                       (filterValues["Shiny Version Available"]!
                           ? pokemon.hasShinyVersion

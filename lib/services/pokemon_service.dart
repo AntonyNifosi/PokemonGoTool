@@ -7,14 +7,13 @@ class PokemonService {
     List<Pokemon> pokemonList = await JSONService.pokemonsFromJson();
 
     if (pokemonList.isEmpty) {
-      print("Je load avec l'API");
       pokemonList = await APIServices.getPokemonListFromAPI();
     }
     savePokemons(pokemonList);
     return pokemonList;
   }
 
-  static void savePokemons(List<Pokemon> pokemonList) {
-    JSONService.pokemonsToJson(pokemonList);
+  static void savePokemons(List<Pokemon> pokemonsList) {
+    JSONService.pokemonsToJson(pokemonsList);
   }
 }

@@ -1,4 +1,3 @@
-import 'package:pokegotool/services/json_service.dart';
 import '../models/pokemon.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert' as convert;
@@ -18,12 +17,12 @@ class APIServices {
     var pokemonsShinyUrl =
         Uri.https("pogoapi.net", "/api/v1/shiny_pokemon.json");
 
-    var pokemonsMythicUrl =
+    var pokemonsCategoryUrl =
         Uri.https("pogoapi.net", "/api/v1/pokemon_rarity.json");
 
     var responsePokemonsList = await http.get(pokemonsReleasedUrl);
     var responsePokemonsShinyList = await http.get(pokemonsShinyUrl);
-    var responsePokemonsMythicList = await http.get(pokemonsMythicUrl);
+    var responsePokemonsMythicList = await http.get(pokemonsCategoryUrl);
 
     if (responsePokemonsList.statusCode == 200) {
       if (responsePokemonsShinyList.statusCode == 200) {
