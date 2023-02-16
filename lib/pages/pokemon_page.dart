@@ -18,13 +18,12 @@ class _PokemonPageState extends State<PokemonPage> with WindowListener {
   late Future<List<Pokemon>> pokemonsFullList;
   late List<Pokemon> pokemonsDisplayedList;
   TextEditingController textController = TextEditingController();
-  Map<String, bool> filterValues = {
-    "Not Captured": false,
+  Map<String, bool?> filterValues = {
     "Captured": false,
     "Shiny Version Available": false,
     "Lucky Version Available": false,
-    "Shiny": false,
-    "Lucky": false
+    "Shiny Captured": false,
+    "Lucky Captured": false
   };
   String searchName = "";
 
@@ -109,7 +108,7 @@ class _PokemonPageState extends State<PokemonPage> with WindowListener {
                             return PokemonCard(
                               pokemonsDisplayedList[index],
                               () {
-                                applyFilter();
+                                //applyFilter();
                               },
                             );
                           }))
@@ -141,10 +140,11 @@ class _PokemonPageState extends State<PokemonPage> with WindowListener {
                                         Text(e.key),
                                         const Spacer(),
                                         Checkbox(
+                                          tristate: true,
                                           value: e.value,
                                           onChanged: (value) {
                                             setState(() {
-                                              filterValues[e.key] = value!;
+                                              filterValues[e.key] = value;
                                             });
                                           },
                                         )
@@ -188,25 +188,63 @@ class _PokemonPageState extends State<PokemonPage> with WindowListener {
           .then((pokeList) => pokemonsDisplayedList = pokeList.where(
                 (pokemon) {
                   bool shouldAppear = true;
-                  shouldAppear =
-                      filterValues["Captured"]! ? pokemon.captured : true;
-                  shouldAppear = shouldAppear &&
-                      (filterValues["Not Captured"]!
-                          ? !pokemon.captured
-                          : true);
-                  shouldAppear = shouldAppear &&
-                      (filterValues["Shiny Version Available"]!
-                          ? pokemon.hasShinyVersion
-                          : true);
-                  shouldAppear = shouldAppear &&
-                      (filterValues["Lucky Version Available"]!
-                          ? pokemon.category != "Mythic"
-                          : true);
-                  shouldAppear = shouldAppear &&
-                      (filterValues["Shiny"]! ? pokemon.isShiny : true);
+                  switch (filterValues["Captured"]) {
+                    case true:
+                      shouldAppear = shouldAppear && pokemon.captured;
+                      break;
+                    case null:
+                      shouldAppear = shouldAppear && !pokemon.captured;
+                      break;
+                    default:
+                      shouldAppear = shouldAppear && true;
+                  }
 
-                  shouldAppear = shouldAppear &&
-                      (filterValues["Lucky"]! ? pokemon.isLucky : true);
+                  switch (filterValues["Shiny Captured"]) {
+                    case true:
+                      shouldAppear = shouldAppear && pokemon.isShiny;
+                      break;
+                    case null:
+                      shouldAppear = shouldAppear && !pokemon.isShiny;
+                      break;
+                    default:
+                      shouldAppear = shouldAppear && true;
+                  }
+
+                  switch (filterValues["Lucky Captured"]) {
+                    case true:
+                      shouldAppear = shouldAppear && pokemon.isLucky;
+                      break;
+                    case null:
+                      shouldAppear = shouldAppear && !pokemon.isLucky;
+                      break;
+                    default:
+                      shouldAppear = shouldAppear && true;
+                  }
+
+                  switch (filterValues["Shiny Version Available"]) {
+                    case true:
+                      shouldAppear = shouldAppear && pokemon.hasShinyVersion;
+                      break;
+                    case null:
+                      shouldAppear = shouldAppear && !pokemon.hasShinyVersion;
+                      break;
+                    default:
+                      shouldAppear = shouldAppear && true;
+                  }
+
+                  switch (filterValues["Lucky Version Available"]) {
+                    case true:
+                      shouldAppear =
+                          shouldAppear && pokemon.category != "Mythic";
+                      break;
+                    case null:
+                      shouldAppear =
+                          shouldAppear && pokemon.category == "Mythic";
+                      break;
+                    default:
+                      shouldAppear = shouldAppear && true;
+                  }
+
                   if (searchName.isNotEmpty) {
                     shouldAppear = shouldAppear &&
                         (pokemon.name
