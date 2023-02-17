@@ -1,10 +1,10 @@
 // ignore_for_file: unused_import
 
 import 'dart:io';
-import 'dart:ui';
+import 'dart:ui' as ui;
+import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:pokegotool/services/pokemon_service.dart';
-import 'package:window_manager/window_manager.dart';
 import '../models/pokemon.dart';
 import '../services/api_service.dart';
 import '../widgets/pokemon_card_widget.dart';
@@ -16,7 +16,7 @@ class PokemonPage extends StatefulWidget {
   State<PokemonPage> createState() => _PokemonPageState();
 }
 
-class _PokemonPageState extends State<PokemonPage> with WindowListener {
+class _PokemonPageState extends State<PokemonPage> {
   late Future<List<Pokemon>> pokemonsFullList;
   late List<Pokemon> pokemonsDisplayedList;
   TextEditingController textController = TextEditingController();
@@ -28,10 +28,8 @@ class _PokemonPageState extends State<PokemonPage> with WindowListener {
     "Lucky Captured": false
   };
   String searchName = "";
-
   @override
   void initState() {
-    windowManager.addListener(this);
     super.initState();
     pokemonsFullList = PokemonService.getPokemonList();
     pokemonsFullList.then((value) => pokemonsDisplayedList = value);
@@ -39,13 +37,7 @@ class _PokemonPageState extends State<PokemonPage> with WindowListener {
 
   @override
   void dispose() {
-    windowManager.removeListener(this);
     super.dispose();
-  }
-
-  @override
-  void onWindowClose() {
-    pokemonsFullList.then((value) => PokemonService.savePokemons(value));
   }
 
   @override
@@ -112,6 +104,8 @@ class _PokemonPageState extends State<PokemonPage> with WindowListener {
                                 pokemonsDisplayedList[index],
                                 () {
                                   applyFilter();
+                                  pokemonsFullList
+                                      .then((value) => PokemonService.savePokemons(value));
                                 },
                               );
                             }))

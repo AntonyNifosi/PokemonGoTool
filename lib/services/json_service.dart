@@ -16,14 +16,12 @@ class JSONService {
     return File('$path/pokemons.json');
   }
 
-  static Future pokemonsToJson(List<Pokemon> pokemonList) async {
+  static void pokemonsToJson(List<Pokemon> pokemonList) {
     List<Map<String, dynamic>> jsonList = [];
     for (var pokemon in pokemonList) {
       jsonList.add(Pokemon.toJson(pokemon));
     }
-    //print(jsonList);
-    final file = await _localFile;
-    file.writeAsStringSync(convert.json.encode(jsonList), flush: true);
+    _localFile.then((value) => value.writeAsString(convert.json.encode(jsonList)));
   }
 
   static Future<List<Pokemon>> pokemonsFromJson() async {

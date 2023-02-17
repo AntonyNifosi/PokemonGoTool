@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:window_manager/window_manager.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'pages/pokemon_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await windowManager.ensureInitialized();
-
+  await Permission.storage.request();
   runApp(const MyApp());
 }
 
