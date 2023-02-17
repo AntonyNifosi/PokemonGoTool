@@ -1,5 +1,7 @@
 // ignore_for_file: unused_import
 
+import 'dart:io';
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:pokegotool/services/pokemon_service.dart';
 import 'package:window_manager/window_manager.dart';
@@ -55,68 +57,70 @@ class _PokemonPageState extends State<PokemonPage> with WindowListener {
               "Pokemon Go Tool",
               style: TextStyle(color: Colors.white),
             ),
+            shadowColor: Colors.black,
             backgroundColor: Colors.blue,
-            elevation: 10,
+            elevation: 5,
+            scrolledUnderElevation: 10,
           ),
-          body: FutureBuilder<List<Pokemon>>(
-            future: pokemonsFullList,
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                return Column(children: [
-                  Row(
-                    children: [
-                      ElevatedButton(
-                          onPressed: () {
-                            setState(() {
-                              pokemonsFullList =
-                                  PokemonService.getPokemonList();
-                              pokemonsFullList.then(
-                                  (value) => pokemonsDisplayedList = value);
-                            });
-                          },
-                          child: const Text("Get Pokemon List")),
-                      SizedBox(
-                        width: 250,
-                        child: TextField(
-                            decoration: const InputDecoration(
-                              border: OutlineInputBorder(),
-                              labelText: 'Search ...',
-                            ),
-                            onChanged: (String value) {
-                              searchName = value;
-                              applyFilter();
-                            }),
-                      ),
-                      ElevatedButton.icon(
-                          onPressed: () {
-                            _dialogBuilder(context);
-                          },
-                          icon: const Icon(Icons.filter_list_outlined),
-                          label: const Text("Filter"))
-                    ],
-                  ),
-                  Expanded(
-                      child: GridView.builder(
-                          addAutomaticKeepAlives: true,
-                          cacheExtent: 10,
-                          gridDelegate:
-                              const SliverGridDelegateWithMaxCrossAxisExtent(
-                            maxCrossAxisExtent: 300,
+          body: Container(
+            margin: const EdgeInsets.only(top: 25, left: 5, right: 5),
+            child: FutureBuilder<List<Pokemon>>(
+              future: pokemonsFullList,
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  return Column(children: [
+                    Container(
+                      margin: const EdgeInsets.only(bottom: 25),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          SizedBox(
+                            width: MediaQuery.of(context).size.width * 0.33,
+                            child: TextField(
+                                decoration: const InputDecoration(
+                                  prefixIcon: Icon(Icons.search),
+                                  border: OutlineInputBorder(),
+                                  hintText: 'Search ...',
+                                ),
+                                onChanged: (String value) {
+                                  searchName = value;
+                                  applyFilter();
+                                }),
                           ),
-                          itemCount: pokemonsDisplayedList.length,
-                          itemBuilder: (BuildContext context, index) {
-                            return PokemonCard(
-                              pokemonsDisplayedList[index],
-                              () {
-                                //applyFilter();
+                          const SizedBox(
+                            width: 25,
+                          ),
+                          ElevatedButton.icon(
+                              onPressed: () {
+                                _dialogBuilder(context);
                               },
-                            );
-                          }))
-                ]);
-              } else {
-                return const Text("NULL");
-              }
-            },
+                              icon: const Icon(Icons.filter_list_outlined),
+                              label: const Text("Filter"))
+                        ],
+                      ),
+                    ),
+                    Expanded(
+                        child: GridView.builder(
+                            addAutomaticKeepAlives: true,
+                            cacheExtent: 10,
+                            gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                              maxCrossAxisExtent: 300,
+                            ),
+                            itemCount: pokemonsDisplayedList.length,
+                            itemBuilder: (BuildContext context, index) {
+                              return PokemonCard(
+                                pokemonsDisplayedList[index],
+                                () {
+                                  applyFilter();
+                                },
+                              );
+                            }))
+                  ]);
+                } else {
+                  return const Text("NULL");
+                }
+              },
+            ),
           ));
     });
   }
@@ -127,56 +131,54 @@ class _PokemonPageState extends State<PokemonPage> with WindowListener {
         builder: (BuildContext context) {
           return StatefulBuilder(
             builder: (context, setState) {
-              return SimpleDialog(
-                  title: const Text('Filter Options'),
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(20.0),
-                      child: Column(
-                        children: <Widget>[] +
-                            (filterValues.entries
-                                .map((e) => Row(
-                                      children: [
-                                        Text(e.key),
-                                        const Spacer(),
-                                        Checkbox(
-                                          tristate: true,
-                                          value: e.value,
-                                          onChanged: (value) {
-                                            setState(() {
-                                              filterValues[e.key] = value;
-                                            });
-                                          },
-                                        )
-                                      ],
-                                    ))
-                                .toList()) +
-                            [
-                              Padding(
-                                padding: const EdgeInsets.only(top: 25),
-                                child: Row(
+              return SimpleDialog(title: const Text('Filter Options'), children: [
+                Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: Column(
+                    children: <Widget>[] +
+                        (filterValues.entries
+                            .map((e) => Row(
                                   children: [
-                                    ElevatedButton.icon(
-                                        onPressed: () {
-                                          Navigator.of(context).pop();
-                                        },
-                                        icon: const Icon(Icons.close),
-                                        label: const Text("Cancel")),
+                                    Text(e.key),
                                     const Spacer(),
-                                    ElevatedButton.icon(
-                                        onPressed: () {
-                                          applyFilter();
-                                          Navigator.of(context).pop();
-                                        },
-                                        icon: const Icon(Icons.done),
-                                        label: const Text("Apply"))
+                                    Checkbox(
+                                      tristate: true,
+                                      value: e.value,
+                                      onChanged: (value) {
+                                        setState(() {
+                                          filterValues[e.key] = value;
+                                        });
+                                      },
+                                    )
                                   ],
-                                ),
-                              )
-                            ],
-                      ),
-                    ),
-                  ]);
+                                ))
+                            .toList()) +
+                        [
+                          Padding(
+                            padding: const EdgeInsets.only(top: 25),
+                            child: Row(
+                              children: [
+                                ElevatedButton.icon(
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                    },
+                                    icon: const Icon(Icons.close),
+                                    label: const Text("Cancel")),
+                                const Spacer(),
+                                ElevatedButton.icon(
+                                    onPressed: () {
+                                      applyFilter();
+                                      Navigator.of(context).pop();
+                                    },
+                                    icon: const Icon(Icons.done),
+                                    label: const Text("Apply"))
+                              ],
+                            ),
+                          )
+                        ],
+                  ),
+                ),
+              ]);
             },
           );
         });
@@ -184,80 +186,33 @@ class _PokemonPageState extends State<PokemonPage> with WindowListener {
 
   void applyFilter() {
     setState(() {
-      pokemonsFullList
-          .then((pokeList) => pokemonsDisplayedList = pokeList.where(
-                (pokemon) {
-                  bool shouldAppear = true;
-                  switch (filterValues["Captured"]) {
-                    case true:
-                      shouldAppear = shouldAppear && pokemon.captured;
-                      break;
-                    case null:
-                      shouldAppear = shouldAppear && !pokemon.captured;
-                      break;
-                    default:
-                      shouldAppear = shouldAppear && true;
-                  }
+      pokemonsFullList.then((pokeList) => pokemonsDisplayedList = pokeList.where((pokemon) {
+            final search = searchName.toLowerCase();
+            final captured = filterValues['Captured'];
+            final shinyCaptured = filterValues['Shiny Captured'];
+            final luckyCaptured = filterValues['Lucky Captured'];
+            final shinyVersionAvailable = filterValues['Shiny Version Available'];
+            final luckyVersionAvailable = filterValues['Lucky Version Available'];
 
-                  switch (filterValues["Shiny Captured"]) {
-                    case true:
-                      shouldAppear = shouldAppear && pokemon.isShiny;
-                      break;
-                    case null:
-                      shouldAppear = shouldAppear && !pokemon.isShiny;
-                      break;
-                    default:
-                      shouldAppear = shouldAppear && true;
-                  }
-
-                  switch (filterValues["Lucky Captured"]) {
-                    case true:
-                      shouldAppear = shouldAppear && pokemon.isLucky;
-                      break;
-                    case null:
-                      shouldAppear = shouldAppear && !pokemon.isLucky;
-                      break;
-                    default:
-                      shouldAppear = shouldAppear && true;
-                  }
-
-                  switch (filterValues["Shiny Version Available"]) {
-                    case true:
-                      shouldAppear = shouldAppear && pokemon.hasShinyVersion;
-                      break;
-                    case null:
-                      shouldAppear = shouldAppear && !pokemon.hasShinyVersion;
-                      break;
-                    default:
-                      shouldAppear = shouldAppear && true;
-                  }
-
-                  switch (filterValues["Lucky Version Available"]) {
-                    case true:
-                      shouldAppear =
-                          shouldAppear && pokemon.category != "Mythic";
-                      break;
-                    case null:
-                      shouldAppear =
-                          shouldAppear && pokemon.category == "Mythic";
-                      break;
-                    default:
-                      shouldAppear = shouldAppear && true;
-                  }
-
-                  if (searchName.isNotEmpty) {
-                    shouldAppear = shouldAppear &&
-                        (pokemon.name
-                                .toLowerCase()
-                                .contains(searchName.toLowerCase()) ||
-                            pokemon.id
-                                .toString()
-                                .toLowerCase()
-                                .contains(searchName.toLowerCase()));
-                  }
-                  return shouldAppear;
-                },
-              ).toList());
+            return ((captured == true && pokemon.captured) ||
+                    (captured == null && !pokemon.captured) ||
+                    (captured == false)) &&
+                ((shinyCaptured == true && pokemon.isShiny) ||
+                    (shinyCaptured == null && !pokemon.isShiny) ||
+                    (shinyCaptured == false)) &&
+                ((luckyCaptured == true && pokemon.isLucky) ||
+                    (luckyCaptured == null && !pokemon.isLucky) ||
+                    (luckyCaptured == false)) &&
+                ((shinyVersionAvailable == true && pokemon.hasShinyVersion) ||
+                    (shinyVersionAvailable == null && !pokemon.hasShinyVersion) ||
+                    (shinyVersionAvailable == false)) &&
+                ((luckyVersionAvailable == true && pokemon.category != 'Mythic') ||
+                    (luckyVersionAvailable == null && pokemon.category == 'Mythic') ||
+                    (luckyVersionAvailable == false)) &&
+                (search.isEmpty ||
+                    (pokemon.name.toLowerCase().contains(search) ||
+                        pokemon.id.toString().contains(search)));
+          }).toList());
     });
   }
 }

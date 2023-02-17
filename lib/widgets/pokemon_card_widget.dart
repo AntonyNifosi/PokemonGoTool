@@ -14,15 +14,25 @@ class _PokemonCardState extends State<PokemonCard> {
   @override
   Widget build(BuildContext context) {
     return Card(
+      surfaceTintColor: Colors.blueGrey,
+      shadowColor: Colors.black,
+      elevation: 5,
       child: Padding(
         padding:
             const EdgeInsets.only(left: 10.0, right: 10.0, top: 5, bottom: 5),
         child: Column(children: [
           Row(children: [
-            Text(widget.pokemon.name, style: const TextStyle(fontSize: 15)),
+            Text(widget.pokemon.name,
+                style: const TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w400,
+                    fontFamily: "Bahnschrift")),
             const Spacer(),
             Text("# ${widget.pokemon.id.toString()}",
-                style: const TextStyle(fontSize: 15))
+                style: const TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w400,
+                    fontFamily: "Bahnschrift"))
           ]),
           Expanded(
             child: Image.network(widget.pokemon.artwork),

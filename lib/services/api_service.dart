@@ -9,8 +9,40 @@ class APIServices {
         "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/$pokemonId.png");*/
   }
 
+  static Future<Map<int, String>> getFrenchName() async {
+    Map<int, String> pokemonsNameById = {};
+    final response = await http.post(
+      Uri.parse('https://beta.pokeapi.co/graphql/v1beta'),
+      headers: {'Content-Type': 'application/json'},
+      body: convert.json.encode({
+        'query': '''
+        {
+          pokemon_v2_pokemonspecies(where: {pokemon_v2_pokemonspeciesnames: {language_id: {_eq: 5}}}) {
+            id
+            pokemon_v2_pokemonspeciesnames(where: {language_id: {_eq: 5}}) {
+              name
+            }
+          }
+        }
+      '''
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      final data = convert.json.decode(response.body);
+      pokemonsNameById = {
+        for (var pokemon in data['data']['pokemon_v2_pokemonspecies'])
+          pokemon['id']: pokemon['pokemon_v2_pokemonspeciesnames'][0]['name']
+      };
+    } else {
+      print('Request failed with status: ${response.statusCode}.');
+    }
+    return pokemonsNameById;
+  }
+
   static Future<List<Pokemon>> getPokemonListFromAPI() async {
     List<Pokemon> pokemonList = [];
+    var pokemonNameByID = await getFrenchName();
     var pokemonsReleasedUrl =
         Uri.https("pogoapi.net", "/api/v1/released_pokemon.json");
 
@@ -46,8 +78,12 @@ class APIServices {
           String category = pokemonRarityMap[pokemon["id"]];
           String artwork = getArtwork(pokemon["id"]);
 
-          pokemonList.add(Pokemon(pokemon["id"], pokemon["name"], category,
-              artwork, hasShinyVersion));
+          pokemonList.add(Pokemon(
+              pokemon["id"],
+              pokemonNameByID[pokemon["id"]]!,
+              category,
+              artwork,
+              hasShinyVersion));
         }
       } else {
         print(
