@@ -13,17 +13,19 @@ Pokemon _$PokemonFromJson(Map<String, dynamic> json) => Pokemon(
       json['artwork'] as String,
       json['hasShinyVersion'] as bool,
     )
-      ..captured = json['captured'] as bool
-      ..isShiny = json['isShiny'] as bool
-      ..isLucky = json['isLucky'] as bool;
+      ..isMaleCaptured = json['isMaleCaptured'] as bool
+      ..isFemaleCaptured = json['isFemaleCaptured'] as bool
+      ..isMaleShinyCaptured = json['isMaleShinyCaptured'] as bool
+      ..isLuckyCaptured = json['isFemaleLuckyCaptured'] as bool;
 
 Map<String, dynamic> _$PokemonToJson(Pokemon instance) => <String, dynamic>{
       'id': instance.id,
       'name': instance.name,
       'category': instance.category,
       'artwork': instance.artwork,
-      'captured': instance.captured,
       'hasShinyVersion': instance.hasShinyVersion,
-      'isShiny': instance.isShiny,
-      'isLucky': instance.isLucky,
+      'isMaleCaptured': instance.isMaleCaptured,
+      'isFemaleCaptured': instance.isFemaleCaptured,
+      'isMaleShinyCaptured': instance.isMaleShinyCaptured,
+      'isFemaleLuckyCaptured': instance.isLuckyCaptured,
     };

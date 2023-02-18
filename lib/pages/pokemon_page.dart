@@ -188,14 +188,16 @@ class _PokemonPageState extends State<PokemonPage> {
             final shinyVersionAvailable = filterValues['Shiny Version Available'];
             final luckyVersionAvailable = filterValues['Lucky Version Available'];
 
-            return ((captured == true && pokemon.captured) ||
-                    (captured == null && !pokemon.captured) ||
+            return ((captured == true && pokemon.isMaleCaptured) ||
+                    (captured == null && !pokemon.isMaleCaptured) ||
                     (captured == false)) &&
-                ((shinyCaptured == true && pokemon.isShiny) ||
-                    (shinyCaptured == null && !pokemon.isShiny) ||
+                ((shinyCaptured == true &&
+                        (pokemon.isMaleShinyCaptured || pokemon.isFemaleShinyCaptured)) ||
+                    (shinyCaptured == null &&
+                        (!pokemon.isMaleShinyCaptured && !pokemon.isFemaleShinyCaptured)) ||
                     (shinyCaptured == false)) &&
-                ((luckyCaptured == true && pokemon.isLucky) ||
-                    (luckyCaptured == null && !pokemon.isLucky) ||
+                ((luckyCaptured == true && pokemon.isLuckyCaptured) ||
+                    (luckyCaptured == null && !pokemon.isLuckyCaptured) ||
                     (luckyCaptured == false)) &&
                 ((shinyVersionAvailable == true && pokemon.hasShinyVersion) ||
                     (shinyVersionAvailable == null && !pokemon.hasShinyVersion) ||

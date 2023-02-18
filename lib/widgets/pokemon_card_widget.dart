@@ -11,28 +11,75 @@ class PokemonCard extends StatefulWidget {
 }
 
 class _PokemonCardState extends State<PokemonCard> {
+  bool isCurrentGenderMale = true;
+  Icon capturedIcon = const Icon(Icons.radio_button_checked_sharp);
+  Icon shinyCapturedIcon = const Icon(Icons.star);
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
+    // Colors if the icons depending of the sexe
+    if (isCurrentGenderMale) {
+      if (widget.pokemon.isMaleCaptured) {
+        capturedIcon = const Icon(Icons.radio_button_checked_sharp, color: Colors.blue);
+      } else {
+        capturedIcon = const Icon(Icons.radio_button_checked_sharp);
+      }
+      if (widget.pokemon.isMaleShinyCaptured) {
+        shinyCapturedIcon = const Icon(Icons.star, color: Color.fromARGB(255, 236, 163, 4));
+      } else {
+        shinyCapturedIcon = const Icon(Icons.star);
+      }
+    } else {
+      if (widget.pokemon.isFemaleCaptured) {
+        capturedIcon = const Icon(Icons.radio_button_checked_sharp, color: Colors.blue);
+      } else {
+        capturedIcon = const Icon(Icons.radio_button_checked_sharp);
+      }
+      if (widget.pokemon.isFemaleShinyCaptured) {
+        shinyCapturedIcon = const Icon(Icons.star, color: Color.fromARGB(255, 236, 163, 4));
+      } else {
+        shinyCapturedIcon = const Icon(Icons.star);
+      }
+    }
+
     return Card(
       surfaceTintColor: Colors.blueGrey,
       shadowColor: Colors.black,
       elevation: 5,
       child: Padding(
-        padding:
-            const EdgeInsets.only(left: 10.0, right: 10.0, top: 5, bottom: 5),
+        padding: const EdgeInsets.only(left: 10.0, right: 10.0, top: 5, bottom: 5),
         child: Column(children: [
           Row(children: [
-            Text(widget.pokemon.name,
+            Text("${widget.pokemon.name} - #${widget.pokemon.id.toString()}",
                 style: const TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w400,
-                    fontFamily: "Bahnschrift")),
+                    fontSize: 15, fontWeight: FontWeight.w400, fontFamily: "Bahnschrift")),
             const Spacer(),
-            Text("# ${widget.pokemon.id.toString()}",
-                style: const TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w400,
-                    fontFamily: "Bahnschrift"))
+            Switch(
+              thumbIcon: MaterialStateProperty.resolveWith<Icon?>(
+                (Set<MaterialState> states) {
+                  // Thumb icon when the switch is selected.
+                  if (states.contains(MaterialState.selected)) {
+                    return const Icon(Icons.male_outlined);
+                  }
+                  return const Icon(Icons.female_outlined);
+                },
+              ),
+              activeColor: Colors.blue,
+              inactiveThumbColor: Colors.pink,
+              activeTrackColor: const Color.fromARGB(255, 209, 207, 207),
+              inactiveTrackColor: const Color.fromARGB(255, 209, 207, 207),
+              value: isCurrentGenderMale,
+              onChanged: (bool value) {
+                setState(() {
+                  isCurrentGenderMale = value;
+                });
+              },
+            ),
           ]),
           Expanded(
             child: Image.network(widget.pokemon.artwork),
@@ -44,37 +91,40 @@ class _PokemonCardState extends State<PokemonCard> {
                 IconButton(
                     onPressed: () {
                       setState(() {
-                        widget.pokemon.captured = !widget.pokemon.captured;
+                        if (isCurrentGenderMale) {
+                          widget.pokemon.isMaleCaptured = !widget.pokemon.isMaleCaptured;
+                        } else {
+                          widget.pokemon.isFemaleCaptured = !widget.pokemon.isFemaleCaptured;
+                        }
                       });
                       widget.onCardChange();
                     },
-                    icon: widget.pokemon.captured
-                        ? const Icon(Icons.radio_button_checked_sharp,
-                            color: Colors.blue)
-                        : const Icon(Icons.radio_button_checked_sharp)),
+                    icon: capturedIcon),
                 const Spacer(),
                 if (widget.pokemon.hasShinyVersion)
                   IconButton(
                     onPressed: () {
                       setState(() {
-                        widget.pokemon.isShiny = !widget.pokemon.isShiny;
+                        if (isCurrentGenderMale) {
+                          widget.pokemon.isMaleShinyCaptured = !widget.pokemon.isMaleShinyCaptured;
+                        } else {
+                          widget.pokemon.isFemaleShinyCaptured =
+                              !widget.pokemon.isFemaleShinyCaptured;
+                        }
                       });
                       widget.onCardChange();
                     },
-                    icon: widget.pokemon.isShiny
-                        ? const Icon(Icons.star,
-                            color: Color.fromARGB(255, 236, 163, 4))
-                        : const Icon(Icons.star),
+                    icon: shinyCapturedIcon,
                   ),
                 if (widget.pokemon.category != "Mythic")
                   IconButton(
                     onPressed: () {
                       setState(() {
-                        widget.pokemon.isLucky = !widget.pokemon.isLucky;
+                        widget.pokemon.isLuckyCaptured = !widget.pokemon.isLuckyCaptured;
                       });
                       widget.onCardChange();
                     },
-                    icon: widget.pokemon.isLucky
+                    icon: widget.pokemon.isLuckyCaptured
                         ? const Icon(
                             Icons.bubble_chart_rounded,
                             color: Colors.pink,

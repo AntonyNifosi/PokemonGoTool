@@ -7,15 +7,15 @@ class Pokemon {
   String name;
   String category = "";
   String artwork;
-  bool captured = false;
   bool hasShinyVersion = false;
-  bool isShiny = false;
-  bool isLucky = false;
-  Pokemon(
-      this.id, this.name, this.category, this.artwork, this.hasShinyVersion);
+  bool isMaleCaptured = false;
+  bool isFemaleCaptured = false;
+  bool isMaleShinyCaptured = false;
+  bool isFemaleShinyCaptured = false;
+  bool isLuckyCaptured = false;
 
-  static Map<String, dynamic> toJson(Pokemon pokemon) =>
-      _$PokemonToJson(pokemon);
+  Pokemon(this.id, this.name, this.category, this.artwork, this.hasShinyVersion);
 
+  static Map<String, dynamic> toJson(Pokemon pokemon) => _$PokemonToJson(pokemon);
   static Pokemon fromJson(Map<String, dynamic> json) => _$PokemonFromJson(json);
 }
