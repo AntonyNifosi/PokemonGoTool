@@ -14,6 +14,7 @@ class _PokemonCardState extends State<PokemonCard> {
   bool isCurrentGenderMale = true;
   Icon capturedIcon = const Icon(Icons.radio_button_checked_sharp);
   Icon shinyCapturedIcon = const Icon(Icons.star);
+  String artworkUrl = "";
 
   @override
   void initState() {
@@ -24,6 +25,8 @@ class _PokemonCardState extends State<PokemonCard> {
   Widget build(BuildContext context) {
     // Colors if the icons depending of the sexe
     if (isCurrentGenderMale) {
+      artworkUrl = widget.pokemon.artworks[ArtworkType.male]!;
+
       if (widget.pokemon.isMaleCaptured) {
         capturedIcon =
             const Icon(Icons.radio_button_checked_sharp, color: Colors.blue);
@@ -31,12 +34,16 @@ class _PokemonCardState extends State<PokemonCard> {
         capturedIcon = const Icon(Icons.radio_button_checked_sharp);
       }
       if (widget.pokemon.isMaleShinyCaptured) {
+        artworkUrl = widget.pokemon.artworks[ArtworkType.maleshiny]!;
+
         shinyCapturedIcon =
             const Icon(Icons.star, color: Color.fromARGB(255, 236, 163, 4));
       } else {
         shinyCapturedIcon = const Icon(Icons.star);
       }
     } else {
+      artworkUrl = widget.pokemon.artworks[ArtworkType.female]!;
+
       if (widget.pokemon.isFemaleCaptured) {
         capturedIcon =
             const Icon(Icons.radio_button_checked_sharp, color: Colors.blue);
@@ -44,6 +51,8 @@ class _PokemonCardState extends State<PokemonCard> {
         capturedIcon = const Icon(Icons.radio_button_checked_sharp);
       }
       if (widget.pokemon.isFemaleShinyCaptured) {
+        artworkUrl = widget.pokemon.artworks[ArtworkType.femaleshiny]!;
+
         shinyCapturedIcon =
             const Icon(Icons.star, color: Color.fromARGB(255, 236, 163, 4));
       } else {
@@ -66,30 +75,48 @@ class _PokemonCardState extends State<PokemonCard> {
                     fontWeight: FontWeight.w400,
                     fontFamily: "Bahnschrift")),
             const Spacer(),
-            Switch(
-              thumbIcon: MaterialStateProperty.resolveWith<Icon?>(
-                (Set<MaterialState> states) {
-                  if (states.contains(MaterialState.selected)) {
-                    return const Icon(Icons.male_outlined);
-                  }
-                  return const Icon(Icons.female_outlined);
+            if (widget.pokemon.genderRate == -1)
+              const Icon(
+                Icons.transgender_outlined,
+                color: Colors.purple,
+              ),
+            if (widget.pokemon.genderRate == 0)
+              const Icon(
+                Icons.male_outlined,
+                color: Colors.blue,
+              ),
+            if (widget.pokemon.genderRate == 8)
+              const Icon(
+                Icons.female_outlined,
+                color: Colors.pink,
+              ),
+            if (widget.pokemon.genderRate > 0 && widget.pokemon.genderRate < 8)
+              Switch(
+                thumbIcon: MaterialStateProperty.resolveWith<Icon?>(
+                  (Set<MaterialState> states) {
+                    if (states.contains(MaterialState.selected)) {
+                      return const Icon(Icons.male_outlined);
+                    }
+                    return const Icon(Icons.female_outlined);
+                  },
+                ),
+                activeColor: Colors.blue,
+                inactiveThumbColor: Colors.pink,
+                activeTrackColor: const Color.fromARGB(255, 209, 207, 207),
+                inactiveTrackColor: const Color.fromARGB(255, 209, 207, 207),
+                value: isCurrentGenderMale,
+                onChanged: (bool value) {
+                  setState(() {
+                    isCurrentGenderMale = value;
+                  });
                 },
               ),
-              activeColor: Colors.blue,
-              inactiveThumbColor: Colors.pink,
-              activeTrackColor: const Color.fromARGB(255, 209, 207, 207),
-              inactiveTrackColor: const Color.fromARGB(255, 209, 207, 207),
-              value: isCurrentGenderMale,
-              onChanged: (bool value) {
-                setState(() {
-                  isCurrentGenderMale = value;
-                });
-              },
-            ),
           ]),
           Expanded(
-            child: Image.network(widget.pokemon.artwork,
-                scale: 1, isAntiAlias: true, filterQuality: FilterQuality.high),
+            child: Image.network(
+              artworkUrl,
+              filterQuality: FilterQuality.medium,
+            ),
           ),
           SizedBox(
             height: 40,
