@@ -95,7 +95,9 @@ class _PokemonPageState extends State<PokemonPage> {
                         child: GridView.builder(
                             addAutomaticKeepAlives: true,
                             cacheExtent: 10,
-                            gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                            gridDelegate:
+                                const SliverGridDelegateWithMaxCrossAxisExtent(
+                              childAspectRatio: 1.8,
                               maxCrossAxisExtent: 400,
                             ),
                             itemCount: pokemonsDisplayedList.length,
@@ -104,8 +106,8 @@ class _PokemonPageState extends State<PokemonPage> {
                                 pokemonsDisplayedList[index],
                                 () {
                                   applyFilter();
-                                  pokemonsFullList
-                                      .then((value) => PokemonService.savePokemons(value));
+                                  pokemonsFullList.then((value) =>
+                                      PokemonService.savePokemons(value));
                                 },
                               );
                             }))
@@ -125,54 +127,56 @@ class _PokemonPageState extends State<PokemonPage> {
         builder: (BuildContext context) {
           return StatefulBuilder(
             builder: (context, setState) {
-              return SimpleDialog(title: const Text('Filter Options'), children: [
-                Padding(
-                  padding: const EdgeInsets.all(20.0),
-                  child: Column(
-                    children: <Widget>[] +
-                        (filterValues.entries
-                            .map((e) => Row(
+              return SimpleDialog(
+                  title: const Text('Filter Options'),
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(20.0),
+                      child: Column(
+                        children: <Widget>[] +
+                            (filterValues.entries
+                                .map((e) => Row(
+                                      children: [
+                                        Text(e.key),
+                                        const Spacer(),
+                                        Checkbox(
+                                          tristate: true,
+                                          value: e.value,
+                                          onChanged: (value) {
+                                            setState(() {
+                                              filterValues[e.key] = value;
+                                            });
+                                          },
+                                        )
+                                      ],
+                                    ))
+                                .toList()) +
+                            [
+                              Padding(
+                                padding: const EdgeInsets.only(top: 25),
+                                child: Row(
                                   children: [
-                                    Text(e.key),
+                                    ElevatedButton.icon(
+                                        onPressed: () {
+                                          Navigator.of(context).pop();
+                                        },
+                                        icon: const Icon(Icons.close),
+                                        label: const Text("Cancel")),
                                     const Spacer(),
-                                    Checkbox(
-                                      tristate: true,
-                                      value: e.value,
-                                      onChanged: (value) {
-                                        setState(() {
-                                          filterValues[e.key] = value;
-                                        });
-                                      },
-                                    )
+                                    ElevatedButton.icon(
+                                        onPressed: () {
+                                          applyFilter();
+                                          Navigator.of(context).pop();
+                                        },
+                                        icon: const Icon(Icons.done),
+                                        label: const Text("Apply"))
                                   ],
-                                ))
-                            .toList()) +
-                        [
-                          Padding(
-                            padding: const EdgeInsets.only(top: 25),
-                            child: Row(
-                              children: [
-                                ElevatedButton.icon(
-                                    onPressed: () {
-                                      Navigator.of(context).pop();
-                                    },
-                                    icon: const Icon(Icons.close),
-                                    label: const Text("Cancel")),
-                                const Spacer(),
-                                ElevatedButton.icon(
-                                    onPressed: () {
-                                      applyFilter();
-                                      Navigator.of(context).pop();
-                                    },
-                                    icon: const Icon(Icons.done),
-                                    label: const Text("Apply"))
-                              ],
-                            ),
-                          )
-                        ],
-                  ),
-                ),
-              ]);
+                                ),
+                              )
+                            ],
+                      ),
+                    ),
+                  ]);
             },
           );
         });
@@ -180,35 +184,44 @@ class _PokemonPageState extends State<PokemonPage> {
 
   void applyFilter() {
     setState(() {
-      pokemonsFullList.then((pokeList) => pokemonsDisplayedList = pokeList.where((pokemon) {
-            final search = searchName.toLowerCase();
-            final captured = filterValues['Captured'];
-            final shinyCaptured = filterValues['Shiny Captured'];
-            final luckyCaptured = filterValues['Lucky Captured'];
-            final shinyVersionAvailable = filterValues['Shiny Version Available'];
-            final luckyVersionAvailable = filterValues['Lucky Version Available'];
+      pokemonsFullList
+          .then((pokeList) => pokemonsDisplayedList = pokeList.where((pokemon) {
+                final search = searchName.toLowerCase();
+                final captured = filterValues['Captured'];
+                final shinyCaptured = filterValues['Shiny Captured'];
+                final luckyCaptured = filterValues['Lucky Captured'];
+                final shinyVersionAvailable =
+                    filterValues['Shiny Version Available'];
+                final luckyVersionAvailable =
+                    filterValues['Lucky Version Available'];
 
-            return ((captured == true && pokemon.isMaleCaptured) ||
-                    (captured == null && !pokemon.isMaleCaptured) ||
-                    (captured == false)) &&
-                ((shinyCaptured == true &&
-                        (pokemon.isMaleShinyCaptured || pokemon.isFemaleShinyCaptured)) ||
-                    (shinyCaptured == null &&
-                        (!pokemon.isMaleShinyCaptured && !pokemon.isFemaleShinyCaptured)) ||
-                    (shinyCaptured == false)) &&
-                ((luckyCaptured == true && pokemon.isLuckyCaptured) ||
-                    (luckyCaptured == null && !pokemon.isLuckyCaptured) ||
-                    (luckyCaptured == false)) &&
-                ((shinyVersionAvailable == true && pokemon.hasShinyVersion) ||
-                    (shinyVersionAvailable == null && !pokemon.hasShinyVersion) ||
-                    (shinyVersionAvailable == false)) &&
-                ((luckyVersionAvailable == true && pokemon.category != 'Mythic') ||
-                    (luckyVersionAvailable == null && pokemon.category == 'Mythic') ||
-                    (luckyVersionAvailable == false)) &&
-                (search.isEmpty ||
-                    (pokemon.name.toLowerCase().contains(search) ||
-                        pokemon.id.toString().contains(search)));
-          }).toList());
+                return ((captured == true && pokemon.isMaleCaptured) ||
+                        (captured == null && !pokemon.isMaleCaptured) ||
+                        (captured == false)) &&
+                    ((shinyCaptured == true &&
+                            (pokemon.isMaleShinyCaptured ||
+                                pokemon.isFemaleShinyCaptured)) ||
+                        (shinyCaptured == null &&
+                            (!pokemon.isMaleShinyCaptured &&
+                                !pokemon.isFemaleShinyCaptured)) ||
+                        (shinyCaptured == false)) &&
+                    ((luckyCaptured == true && pokemon.isLuckyCaptured) ||
+                        (luckyCaptured == null && !pokemon.isLuckyCaptured) ||
+                        (luckyCaptured == false)) &&
+                    ((shinyVersionAvailable == true &&
+                            pokemon.hasShinyVersion) ||
+                        (shinyVersionAvailable == null &&
+                            !pokemon.hasShinyVersion) ||
+                        (shinyVersionAvailable == false)) &&
+                    ((luckyVersionAvailable == true &&
+                            pokemon.category != 'Mythic') ||
+                        (luckyVersionAvailable == null &&
+                            pokemon.category == 'Mythic') ||
+                        (luckyVersionAvailable == false)) &&
+                    (search.isEmpty ||
+                        (pokemon.name.toLowerCase().contains(search) ||
+                            pokemon.id.toString().contains(search)));
+              }).toList());
     });
   }
 }
