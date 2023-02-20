@@ -96,7 +96,7 @@ class _PokemonPageState extends State<PokemonPage> {
                             addAutomaticKeepAlives: true,
                             cacheExtent: 10,
                             gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-                              maxCrossAxisExtent: 300,
+                              maxCrossAxisExtent: 400,
                             ),
                             itemCount: pokemonsDisplayedList.length,
                             itemBuilder: (BuildContext context, index) {
