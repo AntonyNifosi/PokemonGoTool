@@ -89,7 +89,9 @@ class _PokemonCardState extends State<PokemonCard> {
           ]),
           Expanded(
             child: Image.network(widget.pokemon.artwork,
-                scale: 1, isAntiAlias: true, filterQuality: FilterQuality.high),
+                scale: 1,
+                isAntiAlias: true,
+                filterQuality: FilterQuality.medium),
           ),
           SizedBox(
             height: 40,
