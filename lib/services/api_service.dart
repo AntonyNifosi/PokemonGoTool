@@ -3,8 +3,8 @@ import 'package:http/http.dart' as http;
 import 'dart:convert' as convert;
 
 class APIServices {
-  static Map<ArtworkType, String> getArtworks(
-      int pokemonId, bool hasGenderDiff) {
+  static Future<Map<ArtworkType, String>> getArtworks(
+      int pokemonId, bool hasGenderDiff, String alolaName) async {
     Map<ArtworkType, String> artworksList = {};
     artworksList[ArtworkType.male] =
         "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/$pokemonId.png";
@@ -21,9 +21,22 @@ class APIServices {
           "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/shiny/female/$pokemonId.png";
     }
 
+    if (alolaName.isNotEmpty) {
+      var pokemonAlolaUrl =
+          Uri.https("pokeapi.co", "/api/v2/pokemon/alolaName");
+      var responsePokemonAlola = await http.get(pokemonAlolaUrl);
+      if (responsePokemonAlola.statusCode == 200) {
+        var jsonPokemonAlolaResponse = convert
+            .jsonDecode(responsePokemonAlola.body) as Map<String, dynamic>;
+        int id = jsonPokemonAlolaResponse["id"];
+        artworksList[ArtworkType.alola] =
+            "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/$id.png";
+        artworksList[ArtworkType.alolashiny] =
+            "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/shiny/$id.png";
+      }
+    }
+
     return artworksList;
-    /*return Image.network(
-        "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/$pokemonId.png");*/
   }
 
   static Future<Map<int, dynamic>> getPokemonsInfos() async {
@@ -99,8 +112,10 @@ class APIServices {
               .containsKey(pokemon["id"].toString()));
 
           String category = pokemonRarityMap[pokemon["id"]];
-          var artwork = getArtworks(pokemon["id"],
-              pokemonsInfosByID[pokemon["id"]]["has_gender_differences"]);
+          var artwork = await getArtworks(
+              pokemon["id"],
+              pokemonsInfosByID[pokemon["id"]]["has_gender_differences"],
+              "${pokemon["id"]["name"]}-alola");
 
           pokemonList.add(Pokemon(
               pokemon["id"],
@@ -108,7 +123,8 @@ class APIServices {
               pokemonsInfosByID[pokemon["id"]]["gender_rate"]!,
               category,
               artwork,
-              hasShinyVersion));
+              hasShinyVersion,
+              artwork.containsKey("${pokemon["id"]["name"]}-alola")));
         }
       } else {
         print(

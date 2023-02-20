@@ -11,6 +11,7 @@ class Pokemon {
   Map<ArtworkType, String> artworks;
   String category = "";
   bool hasShinyVersion = false;
+  bool hasAlolaForm = false;
   bool isMaleCaptured = false;
   bool isFemaleCaptured = false;
   bool isMaleShinyCaptured = false;
@@ -18,7 +19,7 @@ class Pokemon {
   bool isLuckyCaptured = false;
 
   Pokemon(this.id, this.name, this.genderRate, this.category, this.artworks,
-      this.hasShinyVersion);
+      this.hasShinyVersion, this.hasAlolaForm);
 
   static Map<String, dynamic> toJson(Pokemon pokemon) =>
       _$PokemonToJson(pokemon);

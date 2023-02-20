@@ -15,6 +15,7 @@ Pokemon _$PokemonFromJson(Map<String, dynamic> json) => Pokemon(
         (k, e) => MapEntry($enumDecode(_$ArtworkTypeEnumMap, k), e as String),
       ),
       json['hasShinyVersion'] as bool,
+      json['hasAlolaForm'] as bool,
     )
       ..isMaleCaptured = json['isMaleCaptured'] as bool
       ..isFemaleCaptured = json['isFemaleCaptured'] as bool
@@ -26,10 +27,11 @@ Map<String, dynamic> _$PokemonToJson(Pokemon instance) => <String, dynamic>{
       'id': instance.id,
       'name': instance.name,
       'genderRate': instance.genderRate,
-      'category': instance.category,
       'artworks': instance.artworks
           .map((k, e) => MapEntry(_$ArtworkTypeEnumMap[k]!, e)),
+      'category': instance.category,
       'hasShinyVersion': instance.hasShinyVersion,
+      'hasAlolaForm': instance.hasAlolaForm,
       'isMaleCaptured': instance.isMaleCaptured,
       'isFemaleCaptured': instance.isFemaleCaptured,
       'isMaleShinyCaptured': instance.isMaleShinyCaptured,
