@@ -117,11 +117,20 @@ class APIServices {
               String category = pokemonRarityMap[pokemon["id"]];
               var artwork = await getArtworks(pokemon["id"],
                   pokemonsInfosByID[pokemon["id"]]["has_gender_differences"], alolaName);
+              var genderRate = pokemonsInfosByID[pokemon["id"]]["gender_rate"]!;
+              var gender = PokemonGender.both;
+              if (genderRate == -1) {
+                gender = PokemonGender.genderless;
+              } else if (genderRate == 0) {
+                gender = PokemonGender.male;
+              } else if (genderRate == 8) {
+                gender = PokemonGender.female;
+              }
 
               pokemonList.add(Pokemon(
                   pokemon["id"],
                   pokemonsInfosByID[pokemon["id"]]["french_name"]!,
-                  pokemonsInfosByID[pokemon["id"]]["gender_rate"]!,
+                  gender,
                   category,
                   artwork,
                   hasShinyVersion,

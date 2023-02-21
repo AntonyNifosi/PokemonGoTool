@@ -9,35 +9,36 @@ part of 'pokemon.dart';
 Pokemon _$PokemonFromJson(Map<String, dynamic> json) => Pokemon(
       json['id'] as int,
       json['name'] as String,
-      json['genderRate'] as int,
+      $enumDecode(_$PokemonGenderEnumMap, json['gender']),
       json['category'] as String,
       (json['artworks'] as Map<String, dynamic>).map(
         (k, e) => MapEntry($enumDecode(_$ArtworkTypeEnumMap, k), e as String),
       ),
       json['hasShinyVersion'] as bool,
       json['hasAlolaForm'] as bool,
-    )
-      ..isMaleCaptured = json['isMaleCaptured'] as bool
-      ..isFemaleCaptured = json['isFemaleCaptured'] as bool
-      ..isMaleShinyCaptured = json['isMaleShinyCaptured'] as bool
-      ..isFemaleShinyCaptured = json['isFemaleShinyCaptured'] as bool
-      ..isLuckyCaptured = json['isLuckyCaptured'] as bool;
+    )..captures = (json['captures'] as List<dynamic>)
+        .map((e) => $enumDecode(_$CaptureTypeEnumMap, e))
+        .toSet();
 
 Map<String, dynamic> _$PokemonToJson(Pokemon instance) => <String, dynamic>{
       'id': instance.id,
       'name': instance.name,
-      'genderRate': instance.genderRate,
+      'gender': _$PokemonGenderEnumMap[instance.gender]!,
       'artworks': instance.artworks
           .map((k, e) => MapEntry(_$ArtworkTypeEnumMap[k]!, e)),
       'category': instance.category,
       'hasShinyVersion': instance.hasShinyVersion,
       'hasAlolaForm': instance.hasAlolaForm,
-      'isMaleCaptured': instance.isMaleCaptured,
-      'isFemaleCaptured': instance.isFemaleCaptured,
-      'isMaleShinyCaptured': instance.isMaleShinyCaptured,
-      'isFemaleShinyCaptured': instance.isFemaleShinyCaptured,
-      'isLuckyCaptured': instance.isLuckyCaptured,
+      'captures':
+          instance.captures.map((e) => _$CaptureTypeEnumMap[e]!).toList(),
     };
+
+const _$PokemonGenderEnumMap = {
+  PokemonGender.male: 'male',
+  PokemonGender.female: 'female',
+  PokemonGender.genderless: 'genderless',
+  PokemonGender.both: 'both',
+};
 
 const _$ArtworkTypeEnumMap = {
   ArtworkType.male: 'male',
@@ -46,4 +47,16 @@ const _$ArtworkTypeEnumMap = {
   ArtworkType.femaleshiny: 'femaleshiny',
   ArtworkType.alola: 'alola',
   ArtworkType.alolashiny: 'alolashiny',
+};
+
+const _$CaptureTypeEnumMap = {
+  CaptureType.lucky: 'lucky',
+  CaptureType.normal: 'normal',
+  CaptureType.normalMale: 'normalMale',
+  CaptureType.normalFemale: 'normalFemale',
+  CaptureType.shiny: 'shiny',
+  CaptureType.shinyMale: 'shinyMale',
+  CaptureType.shinyFemale: 'shinyFemale',
+  CaptureType.alola: 'alola',
+  CaptureType.alolaShiny: 'alolaShiny',
 };

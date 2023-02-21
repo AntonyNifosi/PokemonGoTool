@@ -11,96 +11,133 @@ class PokemonCard extends StatefulWidget {
 }
 
 class _PokemonCardState extends State<PokemonCard> {
-  bool isCurrentGenderMale = true;
-  bool isCurrentFormAlola = false;
-  Icon capturedIcon = const Icon(Icons.radio_button_checked_sharp);
-  Icon shinyCapturedIcon = const Icon(Icons.star);
+  var currentGender = PokemonGender.male;
+  var currentForm = PokemonForm.normal;
+
+  late Icon capturedIcon;
+  late Icon capturedShinyIcon;
   String artworkUrl = "";
 
-  void updateAllIcons() {
-    updateCapturedIcon();
-    updateShinyCapturedIcon();
+  var captureInfoTable = {};
+  var artworksInfoTable = {};
+  var iconCaptureInfoTable = {};
+  var iconShinyInfoTable = {};
+
+  void initCaptureTableInfo() {
+    var alolaCaptureMap = {
+      CaptureType.lucky: CaptureType.lucky,
+      CaptureType.normal: CaptureType.alola,
+      CaptureType.shiny: CaptureType.alolaShiny
+    };
+
+    captureInfoTable = {
+      PokemonForm.normal: {
+        PokemonGender.male: {
+          CaptureType.lucky: CaptureType.lucky,
+          CaptureType.normal: CaptureType.normalMale,
+          CaptureType.shiny: CaptureType.shinyMale
+        },
+        PokemonGender.female: {
+          CaptureType.lucky: CaptureType.lucky,
+          CaptureType.normal: CaptureType.normalFemale,
+          CaptureType.shiny: CaptureType.shinyFemale
+        },
+        PokemonGender.genderless: {
+          CaptureType.lucky: CaptureType.lucky,
+          CaptureType.normal: CaptureType.normal,
+          CaptureType.shiny: CaptureType.shiny
+        }
+      },
+      PokemonForm.alola: {
+        PokemonGender.male: alolaCaptureMap,
+        PokemonGender.female: alolaCaptureMap,
+        PokemonGender.genderless: alolaCaptureMap
+      }
+    };
   }
 
-  void updateCapturedIcon() {}
+  void initIconsTableInfo() {
+    Icon capturedIcon = const Icon(Icons.radio_button_checked_sharp, color: Colors.blue);
+    Icon uncapturedIcon = const Icon(Icons.radio_button_checked_sharp);
 
-  void updateShinyCapturedIcon() {}
+    Icon shinyCapturedIcon = const Icon(Icons.star, color: Color.fromARGB(255, 236, 163, 4));
+    Icon shinyUncapturedIcon = const Icon(Icons.star);
+
+    iconCaptureInfoTable = {
+      PokemonForm.normal: {
+        PokemonGender.male: {true: capturedIcon, false: uncapturedIcon},
+        PokemonGender.female: {true: capturedIcon, false: uncapturedIcon},
+        PokemonGender.genderless: {true: capturedIcon, false: uncapturedIcon}
+      },
+      PokemonForm.alola: {
+        PokemonGender.male: {true: capturedIcon, false: uncapturedIcon},
+        PokemonGender.female: {true: capturedIcon, false: uncapturedIcon},
+        PokemonGender.genderless: {true: capturedIcon, false: uncapturedIcon}
+      }
+    };
+
+    iconShinyInfoTable = {
+      PokemonForm.normal: {
+        PokemonGender.male: {true: shinyCapturedIcon, false: shinyUncapturedIcon},
+        PokemonGender.female: {true: shinyCapturedIcon, false: shinyUncapturedIcon},
+        PokemonGender.genderless: {true: shinyCapturedIcon, false: shinyUncapturedIcon}
+      },
+      PokemonForm.alola: {
+        PokemonGender.male: {true: shinyCapturedIcon, false: shinyUncapturedIcon},
+        PokemonGender.female: {true: shinyCapturedIcon, false: shinyUncapturedIcon},
+        PokemonGender.genderless: {true: shinyCapturedIcon, false: shinyUncapturedIcon}
+      }
+    };
+  }
+
+  void initArtworkTableInfo() {
+    artworksInfoTable = {
+      PokemonForm.normal: {
+        PokemonGender.male: {true: ArtworkType.maleshiny, false: ArtworkType.male},
+        PokemonGender.female: {true: ArtworkType.femaleshiny, false: ArtworkType.female},
+        PokemonGender.genderless: {true: ArtworkType.maleshiny, false: ArtworkType.male}
+      },
+      PokemonForm.alola: {
+        PokemonGender.male: {true: ArtworkType.alolashiny, false: ArtworkType.alola},
+        PokemonGender.female: {true: ArtworkType.alolashiny, false: ArtworkType.alola},
+        PokemonGender.genderless: {true: ArtworkType.alolashiny, false: ArtworkType.alola}
+      }
+    };
+  }
+
+  void initTableInfo() {
+    initCaptureTableInfo();
+    initIconsTableInfo();
+    initArtworkTableInfo();
+  }
 
   @override
   void initState() {
     super.initState();
+    initTableInfo();
   }
 
   @override
   Widget build(BuildContext context) {
-    // Colors if the icons depending of the sexe
-    if (isCurrentGenderMale) {
-      artworkUrl = widget.pokemon.artworks[ArtworkType.male]!;
-
-      if (widget.pokemon.isMaleCaptured) {
-        capturedIcon =
-            const Icon(Icons.radio_button_checked_sharp, color: Colors.blue);
-      } else {
-        capturedIcon = const Icon(Icons.radio_button_checked_sharp);
-      }
-      if (widget.pokemon.isMaleShinyCaptured) {
-        artworkUrl = widget.pokemon.artworks[ArtworkType.maleshiny]!;
-
-        shinyCapturedIcon =
-            const Icon(Icons.star, color: Color.fromARGB(255, 236, 163, 4));
-      } else {
-        shinyCapturedIcon = const Icon(Icons.star);
-      }
-    } else {
-      artworkUrl = widget.pokemon.artworks[ArtworkType.female]!;
-
-      if (widget.pokemon.isFemaleCaptured) {
-        capturedIcon =
-            const Icon(Icons.radio_button_checked_sharp, color: Colors.blue);
-      } else {
-        capturedIcon = const Icon(Icons.radio_button_checked_sharp);
-      }
-      if (widget.pokemon.isFemaleShinyCaptured) {
-        artworkUrl = widget.pokemon.artworks[ArtworkType.femaleshiny]!;
-
-        shinyCapturedIcon =
-            const Icon(Icons.star, color: Color.fromARGB(255, 236, 163, 4));
-      } else {
-        shinyCapturedIcon = const Icon(Icons.star);
-      }
-    }
-    // Cas si la forme alola est coché
-    if (isCurrentFormAlola && widget.pokemon.hasAlolaForm) {
-      artworkUrl = widget.pokemon.artworks[ArtworkType.alola]!;
-      if (widget.pokemon.isAlolaCaptured) {
-        capturedIcon =
-            const Icon(Icons.radio_button_checked_sharp, color: Colors.blue);
-      } else {
-        capturedIcon = const Icon(Icons.radio_button_checked_sharp);
-      }
-      if (widget.pokemon.isAlolaShinyCaptured) {
-        artworkUrl = widget.pokemon.artworks[ArtworkType.alolashiny]!;
-        shinyCapturedIcon =
-            const Icon(Icons.star, color: Color.fromARGB(255, 236, 163, 4));
-      } else {
-        shinyCapturedIcon = const Icon(Icons.star);
-      }
-    }
+    artworkUrl = widget.pokemon.artworks[artworksInfoTable[currentForm][currentGender][widget
+        .pokemon.captures
+        .contains(captureInfoTable[currentForm][currentGender][CaptureType.shiny])]]!;
+    capturedIcon = iconCaptureInfoTable[currentForm][currentGender][widget.pokemon.captures
+        .contains(captureInfoTable[currentForm][currentGender][CaptureType.normal])];
+    capturedShinyIcon = iconShinyInfoTable[currentForm][currentGender][widget.pokemon.captures
+        .contains(captureInfoTable[currentForm][currentGender][CaptureType.shiny])];
 
     return Card(
       surfaceTintColor: Colors.blueGrey,
       shadowColor: Colors.black,
       elevation: 5,
       child: Padding(
-        padding:
-            const EdgeInsets.only(left: 10.0, right: 10.0, top: 5, bottom: 5),
+        padding: const EdgeInsets.only(left: 10.0, right: 10.0, top: 5, bottom: 5),
         child: Column(children: [
           Row(children: [
             Text("${widget.pokemon.name} - #${widget.pokemon.id.toString()}",
                 style: const TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w400,
-                    fontFamily: "Bahnschrift")),
+                    fontSize: 15, fontWeight: FontWeight.w400, fontFamily: "Bahnschrift")),
             const Spacer(),
             if (widget.pokemon.hasAlolaForm)
               Switch(
@@ -116,29 +153,29 @@ class _PokemonCardState extends State<PokemonCard> {
                 inactiveThumbColor: Colors.green,
                 activeTrackColor: const Color.fromARGB(255, 209, 207, 207),
                 inactiveTrackColor: const Color.fromARGB(255, 209, 207, 207),
-                value: isCurrentFormAlola,
+                value: currentForm == PokemonForm.alola,
                 onChanged: (bool value) {
                   setState(() {
-                    isCurrentFormAlola = value;
+                    value ? currentForm = PokemonForm.alola : currentForm = PokemonForm.normal;
                   });
                 },
               ),
-            if (widget.pokemon.genderRate == -1)
+            if (widget.pokemon.gender == PokemonGender.genderless)
               const Icon(
                 Icons.transgender_outlined,
                 color: Colors.purple,
               ),
-            if (widget.pokemon.genderRate == 0)
+            if (widget.pokemon.gender == PokemonGender.male)
               const Icon(
                 Icons.male_outlined,
                 color: Colors.blue,
               ),
-            if (widget.pokemon.genderRate == 8)
+            if (widget.pokemon.gender == PokemonGender.female)
               const Icon(
                 Icons.female_outlined,
                 color: Colors.pink,
               ),
-            if (widget.pokemon.genderRate > 0 && widget.pokemon.genderRate < 8)
+            if (widget.pokemon.gender == PokemonGender.both)
               Switch(
                 thumbIcon: MaterialStateProperty.resolveWith<Icon?>(
                   (Set<MaterialState> states) {
@@ -152,10 +189,12 @@ class _PokemonCardState extends State<PokemonCard> {
                 inactiveThumbColor: Colors.pink,
                 activeTrackColor: const Color.fromARGB(255, 209, 207, 207),
                 inactiveTrackColor: const Color.fromARGB(255, 209, 207, 207),
-                value: isCurrentGenderMale,
+                value: currentGender == PokemonGender.male,
                 onChanged: (bool value) {
                   setState(() {
-                    isCurrentGenderMale = value;
+                    value
+                        ? currentGender = PokemonGender.male
+                        : currentGender = PokemonGender.female;
                   });
                 },
               ),
@@ -173,15 +212,10 @@ class _PokemonCardState extends State<PokemonCard> {
                 IconButton(
                     onPressed: () {
                       setState(() {
-                        if (isCurrentFormAlola) {
-                          widget.pokemon.isAlolaCaptured =
-                              !widget.pokemon.isAlolaCaptured;
-                        } else if (isCurrentGenderMale) {
-                          widget.pokemon.isMaleCaptured =
-                              !widget.pokemon.isMaleCaptured;
-                        } else {
-                          widget.pokemon.isFemaleCaptured =
-                              !widget.pokemon.isFemaleCaptured;
+                        var capture =
+                            captureInfoTable[currentForm][currentGender][CaptureType.normal];
+                        if (!(widget.pokemon.captures.remove(capture))) {
+                          widget.pokemon.captures.add(capture);
                         }
                       });
                       widget.onCardChange();
@@ -191,32 +225,30 @@ class _PokemonCardState extends State<PokemonCard> {
                   IconButton(
                     onPressed: () {
                       setState(() {
-                        if (isCurrentFormAlola) {
-                          widget.pokemon.isAlolaShinyCaptured =
-                              !widget.pokemon.isAlolaShinyCaptured;
-                        } else if (isCurrentGenderMale) {
-                          widget.pokemon.isMaleShinyCaptured =
-                              !widget.pokemon.isMaleShinyCaptured;
-                        } else {
-                          widget.pokemon.isFemaleShinyCaptured =
-                              !widget.pokemon.isFemaleShinyCaptured;
+                        var capture =
+                            captureInfoTable[currentForm][currentGender][CaptureType.shiny];
+                        if (!(widget.pokemon.captures.remove(capture))) {
+                          widget.pokemon.captures.add(capture);
                         }
                       });
                       widget.onCardChange();
                     },
-                    icon: shinyCapturedIcon,
+                    icon: capturedShinyIcon,
                   ),
                 const Spacer(),
                 if (widget.pokemon.category != "Mythic")
                   IconButton(
                     onPressed: () {
                       setState(() {
-                        widget.pokemon.isLuckyCaptured =
-                            !widget.pokemon.isLuckyCaptured;
+                        var capture =
+                            captureInfoTable[currentForm][currentGender][CaptureType.lucky];
+                        if (!(widget.pokemon.captures.remove(capture))) {
+                          widget.pokemon.captures.add(capture);
+                        }
                       });
                       widget.onCardChange();
                     },
-                    icon: widget.pokemon.isLuckyCaptured
+                    icon: widget.pokemon.captures.contains(CaptureType.lucky)
                         ? const Icon(
                             Icons.bubble_chart_rounded,
                             color: Colors.pink,
