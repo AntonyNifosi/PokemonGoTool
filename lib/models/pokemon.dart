@@ -17,11 +17,12 @@ class Pokemon {
   bool isMaleShinyCaptured = false;
   bool isFemaleShinyCaptured = false;
   bool isLuckyCaptured = false;
+  bool isAlolaCaptured = false;
+  bool isAlolaShinyCaptured = false;
 
-  Pokemon(this.id, this.name, this.genderRate, this.category, this.artworks,
-      this.hasShinyVersion, this.hasAlolaForm);
+  Pokemon(this.id, this.name, this.genderRate, this.category, this.artworks, this.hasShinyVersion,
+      this.hasAlolaForm);
 
-  static Map<String, dynamic> toJson(Pokemon pokemon) =>
-      _$PokemonToJson(pokemon);
+  static Map<String, dynamic> toJson(Pokemon pokemon) => _$PokemonToJson(pokemon);
   static Pokemon fromJson(Map<String, dynamic> json) => _$PokemonFromJson(json);
 }
