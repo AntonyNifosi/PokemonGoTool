@@ -17,6 +17,15 @@ class _PokemonCardState extends State<PokemonCard> {
   Icon shinyCapturedIcon = const Icon(Icons.star);
   String artworkUrl = "";
 
+  void updateAllIcons() {
+    updateCapturedIcon();
+    updateShinyCapturedIcon();
+  }
+
+  void updateCapturedIcon() {}
+
+  void updateShinyCapturedIcon() {}
+
   @override
   void initState() {
     super.initState();
@@ -29,14 +38,16 @@ class _PokemonCardState extends State<PokemonCard> {
       artworkUrl = widget.pokemon.artworks[ArtworkType.male]!;
 
       if (widget.pokemon.isMaleCaptured) {
-        capturedIcon = const Icon(Icons.radio_button_checked_sharp, color: Colors.blue);
+        capturedIcon =
+            const Icon(Icons.radio_button_checked_sharp, color: Colors.blue);
       } else {
         capturedIcon = const Icon(Icons.radio_button_checked_sharp);
       }
       if (widget.pokemon.isMaleShinyCaptured) {
         artworkUrl = widget.pokemon.artworks[ArtworkType.maleshiny]!;
 
-        shinyCapturedIcon = const Icon(Icons.star, color: Color.fromARGB(255, 236, 163, 4));
+        shinyCapturedIcon =
+            const Icon(Icons.star, color: Color.fromARGB(255, 236, 163, 4));
       } else {
         shinyCapturedIcon = const Icon(Icons.star);
       }
@@ -44,14 +55,16 @@ class _PokemonCardState extends State<PokemonCard> {
       artworkUrl = widget.pokemon.artworks[ArtworkType.female]!;
 
       if (widget.pokemon.isFemaleCaptured) {
-        capturedIcon = const Icon(Icons.radio_button_checked_sharp, color: Colors.blue);
+        capturedIcon =
+            const Icon(Icons.radio_button_checked_sharp, color: Colors.blue);
       } else {
         capturedIcon = const Icon(Icons.radio_button_checked_sharp);
       }
       if (widget.pokemon.isFemaleShinyCaptured) {
         artworkUrl = widget.pokemon.artworks[ArtworkType.femaleshiny]!;
 
-        shinyCapturedIcon = const Icon(Icons.star, color: Color.fromARGB(255, 236, 163, 4));
+        shinyCapturedIcon =
+            const Icon(Icons.star, color: Color.fromARGB(255, 236, 163, 4));
       } else {
         shinyCapturedIcon = const Icon(Icons.star);
       }
@@ -60,13 +73,15 @@ class _PokemonCardState extends State<PokemonCard> {
     if (isCurrentFormAlola && widget.pokemon.hasAlolaForm) {
       artworkUrl = widget.pokemon.artworks[ArtworkType.alola]!;
       if (widget.pokemon.isAlolaCaptured) {
-        capturedIcon = const Icon(Icons.radio_button_checked_sharp, color: Colors.blue);
+        capturedIcon =
+            const Icon(Icons.radio_button_checked_sharp, color: Colors.blue);
       } else {
         capturedIcon = const Icon(Icons.radio_button_checked_sharp);
       }
       if (widget.pokemon.isAlolaShinyCaptured) {
         artworkUrl = widget.pokemon.artworks[ArtworkType.alolashiny]!;
-        shinyCapturedIcon = const Icon(Icons.star, color: Color.fromARGB(255, 236, 163, 4));
+        shinyCapturedIcon =
+            const Icon(Icons.star, color: Color.fromARGB(255, 236, 163, 4));
       } else {
         shinyCapturedIcon = const Icon(Icons.star);
       }
@@ -77,12 +92,15 @@ class _PokemonCardState extends State<PokemonCard> {
       shadowColor: Colors.black,
       elevation: 5,
       child: Padding(
-        padding: const EdgeInsets.only(left: 10.0, right: 10.0, top: 5, bottom: 5),
+        padding:
+            const EdgeInsets.only(left: 10.0, right: 10.0, top: 5, bottom: 5),
         child: Column(children: [
           Row(children: [
             Text("${widget.pokemon.name} - #${widget.pokemon.id.toString()}",
                 style: const TextStyle(
-                    fontSize: 15, fontWeight: FontWeight.w400, fontFamily: "Bahnschrift")),
+                    fontSize: 15,
+                    fontWeight: FontWeight.w400,
+                    fontFamily: "Bahnschrift")),
             const Spacer(),
             if (widget.pokemon.hasAlolaForm)
               Switch(
@@ -156,11 +174,14 @@ class _PokemonCardState extends State<PokemonCard> {
                     onPressed: () {
                       setState(() {
                         if (isCurrentFormAlola) {
-                          widget.pokemon.isAlolaCaptured = !widget.pokemon.isAlolaCaptured;
+                          widget.pokemon.isAlolaCaptured =
+                              !widget.pokemon.isAlolaCaptured;
                         } else if (isCurrentGenderMale) {
-                          widget.pokemon.isMaleCaptured = !widget.pokemon.isMaleCaptured;
+                          widget.pokemon.isMaleCaptured =
+                              !widget.pokemon.isMaleCaptured;
                         } else {
-                          widget.pokemon.isFemaleCaptured = !widget.pokemon.isFemaleCaptured;
+                          widget.pokemon.isFemaleCaptured =
+                              !widget.pokemon.isFemaleCaptured;
                         }
                       });
                       widget.onCardChange();
@@ -174,7 +195,8 @@ class _PokemonCardState extends State<PokemonCard> {
                           widget.pokemon.isAlolaShinyCaptured =
                               !widget.pokemon.isAlolaShinyCaptured;
                         } else if (isCurrentGenderMale) {
-                          widget.pokemon.isMaleShinyCaptured = !widget.pokemon.isMaleShinyCaptured;
+                          widget.pokemon.isMaleShinyCaptured =
+                              !widget.pokemon.isMaleShinyCaptured;
                         } else {
                           widget.pokemon.isFemaleShinyCaptured =
                               !widget.pokemon.isFemaleShinyCaptured;
@@ -189,7 +211,8 @@ class _PokemonCardState extends State<PokemonCard> {
                   IconButton(
                     onPressed: () {
                       setState(() {
-                        widget.pokemon.isLuckyCaptured = !widget.pokemon.isLuckyCaptured;
+                        widget.pokemon.isLuckyCaptured =
+                            !widget.pokemon.isLuckyCaptured;
                       });
                       widget.onCardChange();
                     },
