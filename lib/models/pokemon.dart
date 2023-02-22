@@ -1,7 +1,10 @@
+import 'package:bit_array/bit_array.dart';
 import 'package:json_annotation/json_annotation.dart';
 part 'pokemon.g.dart';
 
 enum ArtworkType { male, female, maleshiny, femaleshiny, alola, alolashiny }
+
+enum PokemonType { male, female, lucky, shiny, alola, galar, size }
 
 enum CaptureType {
   lucky,
@@ -28,15 +31,20 @@ class Pokemon {
   String category = "";
   bool hasShinyVersion = false;
   bool hasAlolaForm = false;
+  Set<BitArray> captured = {};
   Set<CaptureType> captures = {};
 
-  Pokemon(this.id, this.name, this.gender, this.category, this.artworks, this.hasShinyVersion,
-      this.hasAlolaForm);
+  Pokemon(this.id, this.name, this.gender, this.category, this.artworks,
+      this.hasShinyVersion, this.hasAlolaForm);
 
   bool isCaptured() {
     return captures.contains(CaptureType.normal) ||
         captures.contains(CaptureType.normalMale) ||
         captures.contains(CaptureType.normalFemale);
+  }
+
+  bool isCapturedSpecific(BitArray capture) {
+    return captured.contains(capture);
   }
 
   bool isShinyCaptured() {
@@ -45,10 +53,15 @@ class Pokemon {
         captures.contains(CaptureType.shinyFemale);
   }
 
+  bool isShinyCapturedSpecific(BitArray capture) {
+    return captured.contains(capture);
+  }
+
   bool isLuckyCaptured() {
     return captures.contains(CaptureType.lucky);
   }
 
-  static Map<String, dynamic> toJson(Pokemon pokemon) => _$PokemonToJson(pokemon);
+  static Map<String, dynamic> toJson(Pokemon pokemon) =>
+      _$PokemonToJson(pokemon);
   static Pokemon fromJson(Map<String, dynamic> json) => _$PokemonFromJson(json);
 }
