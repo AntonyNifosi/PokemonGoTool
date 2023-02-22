@@ -4,7 +4,7 @@ import 'dart:convert' as convert;
 
 class APIServices {
   static Future<Map<ArtworkType, String>> getArtworks(
-      int pokemonId, bool hasGenderDiff, String alolaName) async {
+      int pokemonId, bool hasGenderDiff, int pokemonAlolaId) async {
     Map<ArtworkType, String> artworksList = {};
     artworksList[ArtworkType.male] =
         "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/$pokemonId.png";
@@ -20,20 +20,13 @@ class APIServices {
           "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/shiny/female/$pokemonId.png";
     }
 
-    if (alolaName.isNotEmpty) {
-      alolaName = alolaName.toLowerCase();
-      var pokemonAlolaUrl = Uri.https("pokeapi.co", "/api/v2/pokemon/$alolaName");
-      var responsePokemonAlola = await http.get(pokemonAlolaUrl);
-      if (responsePokemonAlola.statusCode == 200) {
-        var jsonPokemonAlolaResponse =
-            convert.jsonDecode(responsePokemonAlola.body) as Map<String, dynamic>;
-        int id = jsonPokemonAlolaResponse["id"];
-        artworksList[ArtworkType.alola] =
-            "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/$id.png";
-        artworksList[ArtworkType.alolashiny] =
-            "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/shiny/$id.png";
-      }
+    if (pokemonAlolaId > 0) {
+      artworksList[ArtworkType.alola] =
+          "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/$pokemonAlolaId.png";
+      artworksList[ArtworkType.alolashiny] =
+          "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/shiny/$pokemonAlolaId.png";
     }
+
     return artworksList;
   }
 
@@ -74,6 +67,34 @@ class APIServices {
     return pokemonsInfosById;
   }
 
+  static Future<Map<String, int>> getPokemonsNameById() async {
+    Map<String, int> pokemonsIdByName = {};
+    final response = await http.post(
+      Uri.parse('https://beta.pokeapi.co/graphql/v1beta'),
+      headers: {'Content-Type': 'application/json'},
+      body: convert.json.encode({
+        'query': '''
+        {
+          pokemon_v2_pokemon {
+            name
+            id
+          }
+        }
+      '''
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      final data = convert.json.decode(response.body);
+      pokemonsIdByName = {
+        for (var pokemon in data['data']['pokemon_v2_pokemon']) pokemon['name']: pokemon['id']
+      };
+    } else {
+      print('Request failed with status: ${response.statusCode}.');
+    }
+    return pokemonsIdByName;
+  }
+
   static Future<List<Pokemon>> getPokemonListFromAPI() async {
     List<Pokemon> pokemonList = [];
     var pokemonsInfosByID = await getPokemonsInfos();
@@ -83,17 +104,17 @@ class APIServices {
     var pokemonsCategoryUrl = Uri.https("pogoapi.net", "/api/v1/pokemon_rarity.json");
     var pokemonsAlolaUrl = Uri.https("pogoapi.net", "/api/v1/alolan_pokemon.json");
 
-    var responsePokemonsList = await http.get(pokemonsReleasedUrl);
+    var responsePokemonsReleasedList = await http.get(pokemonsReleasedUrl);
     var responsePokemonsShinyList = await http.get(pokemonsShinyUrl);
     var responsePokemonsMythicList = await http.get(pokemonsCategoryUrl);
     var responsePokemonsAlolaList = await http.get(pokemonsAlolaUrl);
 
-    if (responsePokemonsList.statusCode == 200) {
+    if (responsePokemonsReleasedList.statusCode == 200) {
       if (responsePokemonsShinyList.statusCode == 200) {
         if (responsePokemonsMythicList.statusCode == 200) {
           if (responsePokemonsAlolaList.statusCode == 200) {
-            var jsonPokemonsListResponse =
-                convert.jsonDecode(responsePokemonsList.body) as Map<String, dynamic>;
+            var jsonPokemonsListReleasedResponse =
+                convert.jsonDecode(responsePokemonsReleasedList.body) as Map<String, dynamic>;
             var jsonPokemonsShinyListResponse =
                 convert.jsonDecode(responsePokemonsShinyList.body) as Map<String, dynamic>;
             var jsonPokemonsMythicListResponse =
@@ -101,22 +122,27 @@ class APIServices {
             var jsonPokemonsAlolaListResponse =
                 convert.jsonDecode(responsePokemonsAlolaList.body) as Map<String, dynamic>;
 
+            Map<String, int> pokemonsIdByName = await getPokemonsNameById();
+
             final pokemonRarityMap = Map.fromEntries(jsonPokemonsMythicListResponse.values
                 .expand((x) => x)
                 .map((x) => MapEntry(x['pokemon_id'], x['rarity'])));
 
-            for (var pokemon in jsonPokemonsListResponse.values) {
+            for (var pokemon in jsonPokemonsListReleasedResponse.values) {
               bool hasShinyVersion =
                   jsonPokemonsShinyListResponse.containsKey(pokemon["id"].toString());
+
               bool hasAlolaForm =
                   jsonPokemonsAlolaListResponse.containsKey(pokemon["id"].toString());
-              String alolaName = "";
+
+              int pokemonAlolaId = -1;
               if (hasAlolaForm) {
-                alolaName = "${pokemon["name"]}-alola";
+                pokemonAlolaId =
+                    pokemonsIdByName["${pokemon["name"].toString().toLowerCase()}-alola"]!;
               }
               String category = pokemonRarityMap[pokemon["id"]];
               var artwork = await getArtworks(pokemon["id"],
-                  pokemonsInfosByID[pokemon["id"]]["has_gender_differences"], alolaName);
+                  pokemonsInfosByID[pokemon["id"]]["has_gender_differences"], pokemonAlolaId);
               var genderRate = pokemonsInfosByID[pokemon["id"]]["gender_rate"]!;
               var gender = PokemonGender.both;
               if (genderRate == -1) {
@@ -138,11 +164,9 @@ class APIServices {
             }
           }
         }
-      } else {
-        print('Request failed with status: ${responsePokemonsList.statusCode}.');
       }
     } else {
-      print('Request failed with status: ${responsePokemonsList.statusCode}.');
+      print('Request failed with status: ${responsePokemonsReleasedList.statusCode}.');
     }
 
     //JSONService.pokemonsToJson(pokemonList);

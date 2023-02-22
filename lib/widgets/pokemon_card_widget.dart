@@ -146,11 +146,11 @@ class _PokemonCardState extends State<PokemonCard> {
                     if (states.contains(MaterialState.selected)) {
                       return const Icon(Icons.brightness_4_outlined);
                     }
-                    return const Icon(Icons.south_america_outlined);
+                    return const Icon(Icons.brightness_4_outlined);
                   },
                 ),
-                activeColor: const Color.fromARGB(255, 193, 226, 244),
-                inactiveThumbColor: Colors.green,
+                activeColor: const Color.fromARGB(255, 101, 211, 255),
+                inactiveThumbColor: const Color.fromARGB(255, 85, 87, 86),
                 activeTrackColor: const Color.fromARGB(255, 209, 207, 207),
                 inactiveTrackColor: const Color.fromARGB(255, 209, 207, 207),
                 value: currentForm == PokemonForm.alola,

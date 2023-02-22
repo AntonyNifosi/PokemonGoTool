@@ -6,9 +6,10 @@ import '../models/pokemon.dart';
 
 class JSONService {
   static Future<String> get _localPath async {
-    final directory = await getApplicationDocumentsDirectory();
-
-    return directory.path;
+    final directory = Platform.isAndroid
+        ? await getExternalStorageDirectory()
+        : await getApplicationDocumentsDirectory();
+    return directory!.path;
   }
 
   static Future<File> get _localFile async {
