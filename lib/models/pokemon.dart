@@ -4,19 +4,9 @@ part 'pokemon.g.dart';
 
 enum ArtworkType { male, female, maleshiny, femaleshiny, alola, alolashiny }
 
-enum PokemonType { male, female, lucky, shiny, alola, galar, size }
+enum PokemonType { male, female, genderless, normal, lucky, shiny, classicform, alolaform, galarform, size }
 
-enum CaptureType {
-  lucky,
-  normal,
-  normalMale,
-  normalFemale,
-  shiny,
-  shinyMale,
-  shinyFemale,
-  alola,
-  alolaShiny
-}
+enum CaptureType { lucky, normal, normalMale, normalFemale, shiny, shinyMale, shinyFemale, alola, alolaShiny }
 
 enum PokemonForm { normal, alola }
 
@@ -34,10 +24,25 @@ class Pokemon {
   Set<BitArray> captured = {};
   Set<CaptureType> captures = {};
 
-  Pokemon(this.id, this.name, this.gender, this.category, this.artworks,
-      this.hasShinyVersion, this.hasAlolaForm);
+  Pokemon(this.id, this.name, this.gender, this.category, this.artworks, this.hasShinyVersion, this.hasAlolaForm);
 
-  bool isCaptured() {
+  PokemonGender getGender() {
+    return gender;
+  }
+
+  bool isCaptured(BitArray pokeArray) {
+    return captured.contains(pokeArray);
+  }
+
+  void capture(BitArray pokeArray) {
+    captured.add(pokeArray);
+  }
+
+  void uncapture(BitArray pokeArray) {
+    captured.remove(pokeArray);
+  }
+
+  bool isCapturedOld() {
     return captures.contains(CaptureType.normal) ||
         captures.contains(CaptureType.normalMale) ||
         captures.contains(CaptureType.normalFemale);
@@ -61,7 +66,6 @@ class Pokemon {
     return captures.contains(CaptureType.lucky);
   }
 
-  static Map<String, dynamic> toJson(Pokemon pokemon) =>
-      _$PokemonToJson(pokemon);
+  static Map<String, dynamic> toJson(Pokemon pokemon) => _$PokemonToJson(pokemon);
   static Pokemon fromJson(Map<String, dynamic> json) => _$PokemonFromJson(json);
 }

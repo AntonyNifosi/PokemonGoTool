@@ -105,8 +105,7 @@ class _PokemonPageState extends State<PokemonPage> {
                                 pokemonsDisplayedList[index],
                                 () {
                                   applyFilter();
-                                  pokemonsFullList
-                                      .then((value) => PokemonService.savePokemons(value));
+                                  pokemonsFullList.then((value) => PokemonService.savePokemons(value));
                                 },
                               );
                             }))
@@ -189,8 +188,8 @@ class _PokemonPageState extends State<PokemonPage> {
             final shinyVersionAvailable = filterValues['Shiny Version Available'];
             final luckyVersionAvailable = filterValues['Lucky Version Available'];
 
-            return ((captured == true && pokemon.isCaptured()) ||
-                    (captured == null && !pokemon.isCaptured()) ||
+            return ((captured == true && pokemon.isCapturedOld()) ||
+                    (captured == null && !pokemon.isCapturedOld()) ||
                     (captured == false)) &&
                 ((shinyCaptured == true && pokemon.isShinyCaptured()) ||
                     (shinyCaptured == null && !pokemon.isShinyCaptured()) ||
@@ -205,8 +204,7 @@ class _PokemonPageState extends State<PokemonPage> {
                     (luckyVersionAvailable == null && pokemon.category == 'Mythic') ||
                     (luckyVersionAvailable == false)) &&
                 (search.isEmpty ||
-                    (pokemon.name.toLowerCase().contains(search) ||
-                        pokemon.id.toString().contains(search)));
+                    (pokemon.name.toLowerCase().contains(search) || pokemon.id.toString().contains(search)));
           }).toList());
     });
   }
