@@ -4,6 +4,7 @@ import 'dart:io';
 import 'dart:ui' as ui;
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
+import 'package:pokegotool/controller/pokemon_card_controller.dart';
 import 'package:pokegotool/services/pokemon_service.dart';
 import '../models/pokemon.dart';
 import '../services/api_service.dart';
@@ -19,6 +20,8 @@ class PokemonPage extends StatefulWidget {
 class _PokemonPageState extends State<PokemonPage> {
   late Future<List<Pokemon>> pokemonsFullList;
   late List<Pokemon> pokemonsDisplayedList;
+  late List<PokemonCardController> controllerCardList;
+  Map<Pokemon, PokemonCardController> controllerMap = {};
   TextEditingController textController = TextEditingController();
   Map<String, bool?> filterValues = {
     "Captured": false,
@@ -32,7 +35,19 @@ class _PokemonPageState extends State<PokemonPage> {
   void initState() {
     super.initState();
     pokemonsFullList = PokemonService.getPokemonList();
-    pokemonsFullList.then((value) => pokemonsDisplayedList = value);
+
+    pokemonsFullList.then(
+      (value) {
+        pokemonsDisplayedList = value;
+        controllerCardList = [];
+        for (int i = 0; i < value.length; i++) {
+          controllerCardList
+              .add(PokemonCardController(PokemonType.init, PokemonType.init, value[i]));
+          controllerMap[value[i]] = controllerCardList[i];
+        }
+      },
+    );
+    //pokemonsFullList.then((value) => pokemonsDisplayedList = value);
   }
 
   @override
@@ -94,7 +109,7 @@ class _PokemonPageState extends State<PokemonPage> {
                     Expanded(
                         child: GridView.builder(
                             addAutomaticKeepAlives: true,
-                            cacheExtent: 10,
+                            cacheExtent: 1000,
                             gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
                               childAspectRatio: 1.8,
                               maxCrossAxisExtent: 550,
@@ -105,8 +120,10 @@ class _PokemonPageState extends State<PokemonPage> {
                                 pokemonsDisplayedList[index],
                                 () {
                                   applyFilter();
-                                  pokemonsFullList.then((value) => PokemonService.savePokemons(value));
+                                  pokemonsFullList
+                                      .then((value) => PokemonService.savePokemons(value));
                                 },
+                                controllerMap[pokemonsDisplayedList[index]]!,
                               );
                             }))
                   ]);
@@ -188,8 +205,8 @@ class _PokemonPageState extends State<PokemonPage> {
             final shinyVersionAvailable = filterValues['Shiny Version Available'];
             final luckyVersionAvailable = filterValues['Lucky Version Available'];
 
-            return ((captured == true && pokemon.isCapturedOld()) ||
-                    (captured == null && !pokemon.isCapturedOld()) ||
+            return ((captured == true && pokemon.isNormalCaptured()) ||
+                    (captured == null && !pokemon.isNormalCaptured()) ||
                     (captured == false)) &&
                 ((shinyCaptured == true && pokemon.isShinyCaptured()) ||
                     (shinyCaptured == null && !pokemon.isShinyCaptured()) ||
@@ -204,7 +221,8 @@ class _PokemonPageState extends State<PokemonPage> {
                     (luckyVersionAvailable == null && pokemon.category == 'Mythic') ||
                     (luckyVersionAvailable == false)) &&
                 (search.isEmpty ||
-                    (pokemon.name.toLowerCase().contains(search) || pokemon.id.toString().contains(search)));
+                    (pokemon.name.toLowerCase().contains(search) ||
+                        pokemon.id.toString().contains(search)));
           }).toList());
     });
   }

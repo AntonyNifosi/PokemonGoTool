@@ -1,20 +1,20 @@
 import 'package:bit_array/bit_array.dart';
 import 'package:flutter/material.dart';
+import 'package:pokegotool/controller/pokemon_card_controller.dart';
 
 import '../models/pokemon.dart';
 
 class PokemonCard extends StatefulWidget {
+  final PokemonCardController controller;
   final Pokemon pokemon;
   final VoidCallback onCardChange;
-  const PokemonCard(this.pokemon, this.onCardChange, {super.key});
+  const PokemonCard(this.pokemon, this.onCardChange, this.controller, {super.key});
   @override
   State<PokemonCard> createState() => _PokemonCardState();
 }
 
 class _PokemonCardState extends State<PokemonCard> {
   List<PokemonType> capturesType = [PokemonType.normal, PokemonType.shiny, PokemonType.lucky];
-  late PokemonType currentGender;
-  late PokemonType currentForm;
 
   Icon capturedIcon = const Icon(Icons.radio_button_checked_sharp, color: Colors.blue);
   Icon uncapturedIcon = const Icon(Icons.radio_button_checked_sharp);
@@ -35,26 +35,13 @@ class _PokemonCardState extends State<PokemonCard> {
 
   BitArray getPokemonBitArray() {
     BitArray array = BitArray(PokemonType.size.index);
-    array.setBit(currentForm.index);
-    array.setBit(currentGender.index);
+    array.setBit(widget.controller.currentForm.index);
+    array.setBit(widget.controller.currentGender.index);
 
     return array;
   }
 
   void setCardState() {
-    PokemonGender gender = widget.pokemon.getGender();
-    switch (gender) {
-      case PokemonGender.genderless:
-        currentGender = PokemonType.genderless;
-        break;
-      case PokemonGender.female:
-        currentGender = PokemonType.female;
-        break;
-      default:
-        currentGender = PokemonType.male;
-    }
-    currentForm = PokemonType.classicform;
-
     iconsInfoTable = {
       PokemonType.normal: {
         true: () {
@@ -100,19 +87,25 @@ class _PokemonCardState extends State<PokemonCard> {
   void onCaptureClick() {
     BitArray pokeArray = getPokemonBitArray();
     pokeArray.setBit(PokemonType.normal.index);
-    widget.pokemon.isCaptured(pokeArray) ? widget.pokemon.uncapture(pokeArray) : widget.pokemon.capture(pokeArray);
+    widget.pokemon.isCaptured(pokeArray)
+        ? widget.pokemon.uncapture(pokeArray)
+        : widget.pokemon.capture(pokeArray);
   }
 
   void onShinyCaptureClick() {
     BitArray pokeArray = getPokemonBitArray();
     pokeArray.setBit(PokemonType.shiny.index);
-    widget.pokemon.isCaptured(pokeArray) ? widget.pokemon.uncapture(pokeArray) : widget.pokemon.capture(pokeArray);
+    widget.pokemon.isCaptured(pokeArray)
+        ? widget.pokemon.uncapture(pokeArray)
+        : widget.pokemon.capture(pokeArray);
   }
 
   void onLuckyCaptureClick() {
     BitArray pokeArray = BitArray(PokemonType.size.index);
     pokeArray.setBit(PokemonType.lucky.index);
-    widget.pokemon.isCaptured(pokeArray) ? widget.pokemon.uncapture(pokeArray) : widget.pokemon.capture(pokeArray);
+    widget.pokemon.isCaptured(pokeArray)
+        ? widget.pokemon.uncapture(pokeArray)
+        : widget.pokemon.capture(pokeArray);
   }
 
   @override
@@ -135,7 +128,8 @@ class _PokemonCardState extends State<PokemonCard> {
         child: Column(children: [
           Row(children: [
             Text("${widget.pokemon.name} - #${widget.pokemon.id.toString()}",
-                style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w400, fontFamily: "Bahnschrift")),
+                style: const TextStyle(
+                    fontSize: 15, fontWeight: FontWeight.w400, fontFamily: "Bahnschrift")),
             const Spacer(),
             if (widget.pokemon.hasAlolaForm)
               Switch(
@@ -151,10 +145,12 @@ class _PokemonCardState extends State<PokemonCard> {
                 inactiveThumbColor: const Color.fromARGB(255, 85, 87, 86),
                 activeTrackColor: const Color.fromARGB(255, 209, 207, 207),
                 inactiveTrackColor: const Color.fromARGB(255, 209, 207, 207),
-                value: currentForm == PokemonType.alolaform,
+                value: widget.controller.currentForm == PokemonType.alolaform,
                 onChanged: (bool value) {
                   setState(() {
-                    value ? currentForm = PokemonType.alolaform : currentForm = PokemonType.classicform;
+                    value
+                        ? widget.controller.currentForm = PokemonType.alolaform
+                        : widget.controller.currentForm = PokemonType.classicform;
                   });
                 },
               ),
@@ -187,10 +183,12 @@ class _PokemonCardState extends State<PokemonCard> {
                 inactiveThumbColor: Colors.pink,
                 activeTrackColor: const Color.fromARGB(255, 209, 207, 207),
                 inactiveTrackColor: const Color.fromARGB(255, 209, 207, 207),
-                value: currentGender == PokemonType.male,
+                value: widget.controller.currentGender == PokemonType.male,
                 onChanged: (bool value) {
                   setState(() {
-                    value ? currentGender = PokemonType.male : currentGender = PokemonType.female;
+                    value
+                        ? widget.controller.currentGender = PokemonType.male
+                        : widget.controller.currentGender = PokemonType.female;
                   });
                 },
               ),
@@ -209,8 +207,8 @@ class _PokemonCardState extends State<PokemonCard> {
                     onPressed: () {
                       setState(() {
                         onCaptureClick();
+                        widget.onCardChange();
                       });
-                      widget.onCardChange();
                     },
                     icon: currentCapturedIcon),
                 if (widget.pokemon.hasShinyVersion)
