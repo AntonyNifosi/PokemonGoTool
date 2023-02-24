@@ -18,18 +18,6 @@ enum PokemonType {
   size
 }
 
-enum CaptureType {
-  lucky,
-  normal,
-  normalMale,
-  normalFemale,
-  shiny,
-  shinyMale,
-  shinyFemale,
-  alola,
-  alolaShiny
-}
-
 enum PokemonGender { male, female, genderless, both }
 
 @JsonSerializable()
@@ -41,8 +29,28 @@ class Pokemon {
   String category = "";
   bool hasShinyVersion = false;
   bool hasAlolaForm = false;
+
+  @JsonKey(
+    toJson: _toJson,
+    fromJson: _fromJson,
+  )
   Set<BitArray> captured = {};
-  Set<CaptureType> captures = {};
+
+  static List<dynamic> _toJson(Set<BitArray> array) {
+    List<String> listBit = [];
+    for (BitArray bit in array) {
+      listBit.add(bit.toBinaryString().split('').reversed.join());
+    }
+    return listBit;
+  }
+
+  static Set<BitArray> _fromJson(List<dynamic> listBit) {
+    Set<BitArray> array = {};
+    for (String bits in listBit) {
+      array.add(BitArray.parseBinary(bits));
+    }
+    return array;
+  }
 
   Pokemon(this.id, this.name, this.gender, this.category, this.artworks, this.hasShinyVersion,
       this.hasAlolaForm);
@@ -52,7 +60,8 @@ class Pokemon {
   }
 
   bool isCaptured(BitArray pokeArray) {
-    return captured.contains(pokeArray);
+    bool a = captured.contains(pokeArray);
+    return a;
   }
 
   void capture(BitArray pokeArray) {

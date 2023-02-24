@@ -12,8 +12,8 @@ class PokemonService {
       pokemonList = await JSONService.pokemonsFromJson();
       if (pokemonList.isEmpty) {
         pokemonList = await APIServices.getPokemonListFromAPI();
+        savePokemons(pokemonList);
       }
-      savePokemons(pokemonList);
     }
     return pokemonList;
   }

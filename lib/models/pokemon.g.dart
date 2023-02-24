@@ -16,9 +16,7 @@ Pokemon _$PokemonFromJson(Map<String, dynamic> json) => Pokemon(
       ),
       json['hasShinyVersion'] as bool,
       json['hasAlolaForm'] as bool,
-    )..captures = (json['captures'] as List<dynamic>)
-        .map((e) => $enumDecode(_$CaptureTypeEnumMap, e))
-        .toSet();
+    )..captured = Pokemon._fromJson(json['captured'] as List);
 
 Map<String, dynamic> _$PokemonToJson(Pokemon instance) => <String, dynamic>{
       'id': instance.id,
@@ -29,8 +27,7 @@ Map<String, dynamic> _$PokemonToJson(Pokemon instance) => <String, dynamic>{
       'category': instance.category,
       'hasShinyVersion': instance.hasShinyVersion,
       'hasAlolaForm': instance.hasAlolaForm,
-      'captures':
-          instance.captures.map((e) => _$CaptureTypeEnumMap[e]!).toList(),
+      'captured': Pokemon._toJson(instance.captured),
     };
 
 const _$PokemonGenderEnumMap = {
@@ -47,16 +44,4 @@ const _$ArtworkTypeEnumMap = {
   ArtworkType.femaleshiny: 'femaleshiny',
   ArtworkType.alola: 'alola',
   ArtworkType.alolashiny: 'alolashiny',
-};
-
-const _$CaptureTypeEnumMap = {
-  CaptureType.lucky: 'lucky',
-  CaptureType.normal: 'normal',
-  CaptureType.normalMale: 'normalMale',
-  CaptureType.normalFemale: 'normalFemale',
-  CaptureType.shiny: 'shiny',
-  CaptureType.shinyMale: 'shinyMale',
-  CaptureType.shinyFemale: 'shinyFemale',
-  CaptureType.alola: 'alola',
-  CaptureType.alolaShiny: 'alolaShiny',
 };
