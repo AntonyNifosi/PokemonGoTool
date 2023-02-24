@@ -84,28 +84,52 @@ class _PokemonCardState extends State<PokemonCard> {
     }
   }
 
+  void updateArtwork() {
+    bool isShinyCaptured = false;
+    if (widget.pokemon.hasShinyVersion) {
+      BitArray pokeArray = getPokemonBitArray();
+      pokeArray.setBit(PokemonType.shiny.index);
+      isShinyCaptured = widget.pokemon.isCaptured(pokeArray);
+    }
+    switch (widget.controller.currentForm) {
+      case PokemonType.classicform:
+        switch (widget.controller.currentGender) {
+          case PokemonType.female:
+            artworkUrl = isShinyCaptured
+                ? widget.pokemon.artworks[ArtworkType.femaleshiny]!
+                : widget.pokemon.artworks[ArtworkType.female]!;
+            break;
+          default:
+            artworkUrl = isShinyCaptured
+                ? widget.pokemon.artworks[ArtworkType.maleshiny]!
+                : widget.pokemon.artworks[ArtworkType.male]!;
+        }
+        break;
+      case PokemonType.alolaform:
+        artworkUrl = isShinyCaptured
+            ? widget.pokemon.artworks[ArtworkType.alolashiny]!
+            : widget.pokemon.artworks[ArtworkType.alola]!;
+        break;
+      default:
+    }
+  }
+
   void onCaptureClick() {
     BitArray pokeArray = getPokemonBitArray();
     pokeArray.setBit(PokemonType.normal.index);
-    widget.pokemon.isCaptured(pokeArray)
-        ? widget.pokemon.uncapture(pokeArray)
-        : widget.pokemon.capture(pokeArray);
+    widget.pokemon.isCaptured(pokeArray) ? widget.pokemon.uncapture(pokeArray) : widget.pokemon.capture(pokeArray);
   }
 
   void onShinyCaptureClick() {
     BitArray pokeArray = getPokemonBitArray();
     pokeArray.setBit(PokemonType.shiny.index);
-    widget.pokemon.isCaptured(pokeArray)
-        ? widget.pokemon.uncapture(pokeArray)
-        : widget.pokemon.capture(pokeArray);
+    widget.pokemon.isCaptured(pokeArray) ? widget.pokemon.uncapture(pokeArray) : widget.pokemon.capture(pokeArray);
   }
 
   void onLuckyCaptureClick() {
     BitArray pokeArray = BitArray(PokemonType.size.index);
     pokeArray.setBit(PokemonType.lucky.index);
-    widget.pokemon.isCaptured(pokeArray)
-        ? widget.pokemon.uncapture(pokeArray)
-        : widget.pokemon.capture(pokeArray);
+    widget.pokemon.isCaptured(pokeArray) ? widget.pokemon.uncapture(pokeArray) : widget.pokemon.capture(pokeArray);
   }
 
   @override
@@ -117,7 +141,7 @@ class _PokemonCardState extends State<PokemonCard> {
   @override
   Widget build(BuildContext context) {
     updateIcons();
-    artworkUrl = widget.pokemon.artworks[ArtworkType.male]!;
+    updateArtwork();
 
     return Card(
       surfaceTintColor: Colors.blueGrey,
@@ -128,8 +152,7 @@ class _PokemonCardState extends State<PokemonCard> {
         child: Column(children: [
           Row(children: [
             Text("${widget.pokemon.name} - #${widget.pokemon.id.toString()}",
-                style: const TextStyle(
-                    fontSize: 15, fontWeight: FontWeight.w400, fontFamily: "Bahnschrift")),
+                style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w400, fontFamily: "Bahnschrift")),
             const Spacer(),
             if (widget.pokemon.hasAlolaForm)
               Switch(
