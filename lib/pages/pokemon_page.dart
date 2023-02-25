@@ -143,7 +143,7 @@ class _PokemonPageState extends State<PokemonPage> {
             builder: (context, setState) {
               return SimpleDialog(title: const Text('Filter Options'), children: [
                 Padding(
-                  padding: const EdgeInsets.all(20.0),
+                  padding: const EdgeInsets.only(left: 15, right: 15),
                   child: Column(
                     children: <Widget>[] +
                         (filterValues.entries

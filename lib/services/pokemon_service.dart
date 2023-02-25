@@ -7,12 +7,12 @@ import '../models/pokemon.dart';
 class PokemonService {
   static Future<List<Pokemon>> getPokemonList() async {
     List<Pokemon> pokemonList = [];
-    bool localApiUpToDate = await checkForAPIUpdate();
     var apiVersion = await APIServices.getAPIVersions();
 
     if (kIsWeb) {
       pokemonList = await APIServices.getPokemonListFromAPI();
     } else {
+      bool localApiUpToDate = await checkForAPIUpdate();
       pokemonList = await JSONService.pokemonsFromJson();
 
       if (pokemonList.isEmpty) {
