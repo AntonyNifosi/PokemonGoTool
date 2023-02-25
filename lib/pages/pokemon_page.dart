@@ -40,7 +40,8 @@ class _PokemonPageState extends State<PokemonPage> {
       (value) {
         pokemonsDisplayedList = value;
         controllerCardList = List.generate(value.length, (index) {
-          var card = PokemonCardController(PokemonType.init, PokemonType.init, value[index]);
+          var card =
+              PokemonCardController(PokemonAttribute.init, PokemonAttribute.init, value[index]);
           controllerMap[value[index]] = card;
           return card;
         });
@@ -118,7 +119,8 @@ class _PokemonPageState extends State<PokemonPage> {
                                 pokemonsDisplayedList[index],
                                 () {
                                   applyFilter();
-                                  pokemonsFullList.then((value) => PokemonService.savePokemons(value));
+                                  pokemonsFullList
+                                      .then((value) => PokemonService.savePokemons(value));
                                 },
                                 controllerMap[pokemonsDisplayedList[index]]!,
                               );
@@ -218,7 +220,8 @@ class _PokemonPageState extends State<PokemonPage> {
                     (luckyVersionAvailable == null && pokemon.category == 'Mythic') ||
                     (luckyVersionAvailable == false)) &&
                 (search.isEmpty ||
-                    (pokemon.name.toLowerCase().contains(search) || pokemon.id.toString().contains(search)));
+                    (pokemon.name.toLowerCase().contains(search) ||
+                        pokemon.id.toString().contains(search)));
           }).toList());
     });
   }

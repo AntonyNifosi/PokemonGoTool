@@ -1,22 +1,22 @@
 import 'package:pokegotool/models/pokemon.dart';
 
 class PokemonCardController {
-  PokemonType currentGender;
-  PokemonType currentForm;
+  PokemonAttribute currentGender;
+  PokemonAttribute currentForm;
   Pokemon pokemon;
 
   PokemonCardController(this.currentForm, this.currentGender, this.pokemon) {
     PokemonGender gender = pokemon.getGender();
     switch (gender) {
       case PokemonGender.genderless:
-        currentGender = PokemonType.genderless;
+        currentGender = PokemonAttribute.genderless;
         break;
       case PokemonGender.female:
-        currentGender = PokemonType.female;
+        currentGender = PokemonAttribute.female;
         break;
       default:
-        currentGender = PokemonType.male;
+        currentGender = PokemonAttribute.male;
     }
-    currentForm = PokemonType.classicform;
+    currentForm = PokemonAttribute.classicform;
   }
 }

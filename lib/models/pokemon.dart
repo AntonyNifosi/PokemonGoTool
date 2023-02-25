@@ -4,7 +4,7 @@ part 'pokemon.g.dart';
 
 enum ArtworkType { male, female, maleshiny, femaleshiny, alola, alolashiny }
 
-enum PokemonType {
+enum PokemonAttribute {
   init,
   male,
   female,
@@ -29,7 +29,6 @@ class Pokemon {
   String category = "";
   bool hasShinyVersion = false;
   bool hasAlolaForm = false;
-
   @JsonKey(
     toJson: _toJson,
     fromJson: _fromJson,
@@ -72,42 +71,42 @@ class Pokemon {
     captured.remove(pokeArray);
   }
 
-  List<PokemonType> _getPossibleGender() {
+  List<PokemonAttribute> _getPossibleGender() {
     switch (gender) {
       case PokemonGender.both:
-        return [PokemonType.male, PokemonType.female];
+        return [PokemonAttribute.male, PokemonAttribute.female];
 
       case PokemonGender.male:
-        return [PokemonType.male];
+        return [PokemonAttribute.male];
 
       case PokemonGender.female:
-        return [PokemonType.female];
+        return [PokemonAttribute.female];
 
       case PokemonGender.genderless:
-        return [PokemonType.genderless];
+        return [PokemonAttribute.genderless];
 
       default:
         return [];
     }
   }
 
-  List<PokemonType> _getPossibleForm() {
-    List<PokemonType> formsList = [PokemonType.classicform];
+  List<PokemonAttribute> _getPossibleForm() {
+    List<PokemonAttribute> formsList = [PokemonAttribute.classicform];
 
     if (hasAlolaForm) {
-      formsList.add(PokemonType.alolaform);
+      formsList.add(PokemonAttribute.alolaform);
     }
 
     return formsList;
   }
 
   bool _isCapturedSpecific(
-      List<PokemonType> genders, List<PokemonType> forms, PokemonType captureType) {
+      List<PokemonAttribute> genders, List<PokemonAttribute> forms, PokemonAttribute captureType) {
     bool isCaptured = true;
     if (forms.isNotEmpty) {
       for (var form in forms) {
         for (var gender in genders) {
-          BitArray pokemonArray = BitArray(PokemonType.size.index);
+          BitArray pokemonArray = BitArray(PokemonAttribute.size.index);
           pokemonArray.setBit(gender.index);
           pokemonArray.setBit(form.index);
           pokemonArray.setBit(captureType.index);
@@ -115,7 +114,7 @@ class Pokemon {
         }
       }
     } else {
-      BitArray pokemonArray = BitArray(PokemonType.size.index);
+      BitArray pokemonArray = BitArray(PokemonAttribute.size.index);
       pokemonArray.setBit(captureType.index);
       isCaptured = isCaptured && captured.contains(pokemonArray);
     }
@@ -123,25 +122,25 @@ class Pokemon {
   }
 
   bool isNormalCaptured() {
-    List<PokemonType> genderList = _getPossibleGender();
-    List<PokemonType> formsList = _getPossibleForm();
-    PokemonType captureType = PokemonType.normal;
+    List<PokemonAttribute> genderList = _getPossibleGender();
+    List<PokemonAttribute> formsList = _getPossibleForm();
+    PokemonAttribute captureType = PokemonAttribute.normal;
 
     return _isCapturedSpecific(genderList, formsList, captureType);
   }
 
   bool isShinyCaptured() {
-    List<PokemonType> genderList = _getPossibleGender();
-    List<PokemonType> formsList = _getPossibleForm();
-    PokemonType captureType = PokemonType.shiny;
+    List<PokemonAttribute> genderList = _getPossibleGender();
+    List<PokemonAttribute> formsList = _getPossibleForm();
+    PokemonAttribute captureType = PokemonAttribute.shiny;
 
     return _isCapturedSpecific(genderList, formsList, captureType);
   }
 
   bool isLuckyCaptured() {
-    List<PokemonType> genderList = [];
-    List<PokemonType> formsList = [];
-    PokemonType captureType = PokemonType.lucky;
+    List<PokemonAttribute> genderList = [];
+    List<PokemonAttribute> formsList = [];
+    PokemonAttribute captureType = PokemonAttribute.lucky;
 
     return _isCapturedSpecific(genderList, formsList, captureType);
   }

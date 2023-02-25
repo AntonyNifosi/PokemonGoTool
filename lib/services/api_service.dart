@@ -1,9 +1,12 @@
+import 'package:pokegotool/models/api_version.dart';
+
 import '../models/pokemon.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert' as convert;
 
 class APIServices {
-  static Future<Map<ArtworkType, String>> getArtworks(int pokemonId, bool hasGenderDiff, int pokemonAlolaId) async {
+  static Future<Map<ArtworkType, String>> getArtworks(
+      int pokemonId, bool hasGenderDiff, int pokemonAlolaId) async {
     Map<ArtworkType, String> artworksList = {};
     artworksList[ArtworkType.male] =
         "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/$pokemonId.png";
@@ -85,7 +88,9 @@ class APIServices {
 
     if (response.statusCode == 200) {
       final data = convert.json.decode(response.body);
-      pokemonsIdByName = {for (var pokemon in data['data']['pokemon_v2_pokemon']) pokemon['name']: pokemon['id']};
+      pokemonsIdByName = {
+        for (var pokemon in data['data']['pokemon_v2_pokemon']) pokemon['name']: pokemon['id']
+      };
     } else {
       print('Request failed with status: ${response.statusCode}.');
     }
@@ -126,17 +131,20 @@ class APIServices {
                 .map((x) => MapEntry(x['pokemon_id'], x['rarity'])));
 
             for (var pokemon in jsonPokemonsListReleasedResponse.values) {
-              bool hasShinyVersion = jsonPokemonsShinyListResponse.containsKey(pokemon["id"].toString());
+              bool hasShinyVersion =
+                  jsonPokemonsShinyListResponse.containsKey(pokemon["id"].toString());
 
-              bool hasAlolaForm = jsonPokemonsAlolaListResponse.containsKey(pokemon["id"].toString());
+              bool hasAlolaForm =
+                  jsonPokemonsAlolaListResponse.containsKey(pokemon["id"].toString());
 
               int pokemonAlolaId = -1;
               if (hasAlolaForm) {
-                pokemonAlolaId = pokemonsIdByName["${pokemon["name"].toString().toLowerCase()}-alola"]!;
+                pokemonAlolaId =
+                    pokemonsIdByName["${pokemon["name"].toString().toLowerCase()}-alola"]!;
               }
               String category = pokemonRarityMap[pokemon["id"]];
-              var artwork = await getArtworks(
-                  pokemon["id"], pokemonsInfosByID[pokemon["id"]]["has_gender_differences"], pokemonAlolaId);
+              var artwork = await getArtworks(pokemon["id"],
+                  pokemonsInfosByID[pokemon["id"]]["has_gender_differences"], pokemonAlolaId);
               var genderRate = pokemonsInfosByID[pokemon["id"]]["gender_rate"]!;
               var gender = PokemonGender.both;
               if (genderRate == -1) {
@@ -147,8 +155,14 @@ class APIServices {
                 gender = PokemonGender.female;
               }
 
-              pokemonList.add(Pokemon(pokemon["id"], pokemonsInfosByID[pokemon["id"]]["french_name"]!, gender, category,
-                  artwork, hasShinyVersion, hasAlolaForm));
+              pokemonList.add(Pokemon(
+                  pokemon["id"],
+                  pokemonsInfosByID[pokemon["id"]]["french_name"]!,
+                  gender,
+                  category,
+                  artwork,
+                  hasShinyVersion,
+                  hasAlolaForm));
             }
           }
         }
@@ -157,5 +171,29 @@ class APIServices {
       print('Request failed with status: ${responsePokemonsReleasedList.statusCode}.');
     }
     return pokemonList;
+  }
+
+  static Future<ApiVersion> getAPIVersions() async {
+    ApiVersion apiVersion = ApiVersion({});
+
+    var pokemonAPIVersionsUrl = Uri.https("pogoapi.net", "/api/v1/api_hashes.json");
+    var responsePokemonsAPIVersions = await http.get(pokemonAPIVersionsUrl);
+
+    if (responsePokemonsAPIVersions.statusCode == 200) {
+      var jsonPokemonsAPIVersionsResponse =
+          convert.jsonDecode(responsePokemonsAPIVersions.body) as Map<String, dynamic>;
+      Map<String, String> versions = {};
+      versions["released_pokemon.json"] =
+          jsonPokemonsAPIVersionsResponse["released_pokemon.json"]["hash_sha256"];
+      versions["shiny_pokemon.json"] =
+          jsonPokemonsAPIVersionsResponse["shiny_pokemon.json"]["hash_sha256"];
+      versions["pokemon_rarity.json"] =
+          jsonPokemonsAPIVersionsResponse["pokemon_rarity.json"]["hash_sha256"];
+      versions["alolan_pokemon.json"] =
+          jsonPokemonsAPIVersionsResponse["alolan_pokemon.json"]["hash_sha256"];
+
+      apiVersion = ApiVersion(versions);
+    }
+    return apiVersion;
   }
 }

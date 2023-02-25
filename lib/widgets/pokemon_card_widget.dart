@@ -14,7 +14,11 @@ class PokemonCard extends StatefulWidget {
 }
 
 class _PokemonCardState extends State<PokemonCard> {
-  List<PokemonType> capturesType = [PokemonType.normal, PokemonType.shiny, PokemonType.lucky];
+  List<PokemonAttribute> capturesType = [
+    PokemonAttribute.normal,
+    PokemonAttribute.shiny,
+    PokemonAttribute.lucky
+  ];
 
   Icon capturedIcon = const Icon(Icons.radio_button_checked_sharp, color: Colors.blue);
   Icon uncapturedIcon = const Icon(Icons.radio_button_checked_sharp);
@@ -34,7 +38,7 @@ class _PokemonCardState extends State<PokemonCard> {
   String artworkUrl = "";
 
   BitArray getPokemonBitArray() {
-    BitArray array = BitArray(PokemonType.size.index);
+    BitArray array = BitArray(PokemonAttribute.size.index);
     array.setBit(widget.controller.currentForm.index);
     array.setBit(widget.controller.currentGender.index);
 
@@ -43,7 +47,7 @@ class _PokemonCardState extends State<PokemonCard> {
 
   void setCardState() {
     iconsInfoTable = {
-      PokemonType.normal: {
+      PokemonAttribute.normal: {
         true: () {
           currentCapturedIcon = capturedIcon;
         },
@@ -51,7 +55,7 @@ class _PokemonCardState extends State<PokemonCard> {
           currentCapturedIcon = uncapturedIcon;
         }
       },
-      PokemonType.shiny: {
+      PokemonAttribute.shiny: {
         true: () {
           currentCapturedShinyIcon = shinyCapturedIcon;
         },
@@ -59,7 +63,7 @@ class _PokemonCardState extends State<PokemonCard> {
           currentCapturedShinyIcon = shinyUncapturedIcon;
         },
       },
-      PokemonType.lucky: {
+      PokemonAttribute.lucky: {
         true: () {
           currentCapturedLuckyIcon = luckyCapturedIcon;
         },
@@ -73,8 +77,8 @@ class _PokemonCardState extends State<PokemonCard> {
   void updateIcons() {
     for (var captureType in capturesType) {
       BitArray pokeArray;
-      if (captureType == PokemonType.lucky) {
-        pokeArray = BitArray(PokemonType.size.index);
+      if (captureType == PokemonAttribute.lucky) {
+        pokeArray = BitArray(PokemonAttribute.size.index);
       } else {
         pokeArray = getPokemonBitArray();
       }
@@ -88,13 +92,13 @@ class _PokemonCardState extends State<PokemonCard> {
     bool isShinyCaptured = false;
     if (widget.pokemon.hasShinyVersion) {
       BitArray pokeArray = getPokemonBitArray();
-      pokeArray.setBit(PokemonType.shiny.index);
+      pokeArray.setBit(PokemonAttribute.shiny.index);
       isShinyCaptured = widget.pokemon.isCaptured(pokeArray);
     }
     switch (widget.controller.currentForm) {
-      case PokemonType.classicform:
+      case PokemonAttribute.classicform:
         switch (widget.controller.currentGender) {
-          case PokemonType.female:
+          case PokemonAttribute.female:
             artworkUrl = isShinyCaptured
                 ? widget.pokemon.artworks[ArtworkType.femaleshiny]!
                 : widget.pokemon.artworks[ArtworkType.female]!;
@@ -105,7 +109,7 @@ class _PokemonCardState extends State<PokemonCard> {
                 : widget.pokemon.artworks[ArtworkType.male]!;
         }
         break;
-      case PokemonType.alolaform:
+      case PokemonAttribute.alolaform:
         artworkUrl = isShinyCaptured
             ? widget.pokemon.artworks[ArtworkType.alolashiny]!
             : widget.pokemon.artworks[ArtworkType.alola]!;
@@ -116,20 +120,26 @@ class _PokemonCardState extends State<PokemonCard> {
 
   void onCaptureClick() {
     BitArray pokeArray = getPokemonBitArray();
-    pokeArray.setBit(PokemonType.normal.index);
-    widget.pokemon.isCaptured(pokeArray) ? widget.pokemon.uncapture(pokeArray) : widget.pokemon.capture(pokeArray);
+    pokeArray.setBit(PokemonAttribute.normal.index);
+    widget.pokemon.isCaptured(pokeArray)
+        ? widget.pokemon.uncapture(pokeArray)
+        : widget.pokemon.capture(pokeArray);
   }
 
   void onShinyCaptureClick() {
     BitArray pokeArray = getPokemonBitArray();
-    pokeArray.setBit(PokemonType.shiny.index);
-    widget.pokemon.isCaptured(pokeArray) ? widget.pokemon.uncapture(pokeArray) : widget.pokemon.capture(pokeArray);
+    pokeArray.setBit(PokemonAttribute.shiny.index);
+    widget.pokemon.isCaptured(pokeArray)
+        ? widget.pokemon.uncapture(pokeArray)
+        : widget.pokemon.capture(pokeArray);
   }
 
   void onLuckyCaptureClick() {
-    BitArray pokeArray = BitArray(PokemonType.size.index);
-    pokeArray.setBit(PokemonType.lucky.index);
-    widget.pokemon.isCaptured(pokeArray) ? widget.pokemon.uncapture(pokeArray) : widget.pokemon.capture(pokeArray);
+    BitArray pokeArray = BitArray(PokemonAttribute.size.index);
+    pokeArray.setBit(PokemonAttribute.lucky.index);
+    widget.pokemon.isCaptured(pokeArray)
+        ? widget.pokemon.uncapture(pokeArray)
+        : widget.pokemon.capture(pokeArray);
   }
 
   @override
@@ -152,7 +162,8 @@ class _PokemonCardState extends State<PokemonCard> {
         child: Column(children: [
           Row(children: [
             Text("${widget.pokemon.name} - #${widget.pokemon.id.toString()}",
-                style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w400, fontFamily: "Bahnschrift")),
+                style: const TextStyle(
+                    fontSize: 15, fontWeight: FontWeight.w400, fontFamily: "Bahnschrift")),
             const Spacer(),
             if (widget.pokemon.hasAlolaForm)
               Switch(
@@ -168,12 +179,12 @@ class _PokemonCardState extends State<PokemonCard> {
                 inactiveThumbColor: const Color.fromARGB(255, 85, 87, 86),
                 activeTrackColor: const Color.fromARGB(255, 209, 207, 207),
                 inactiveTrackColor: const Color.fromARGB(255, 209, 207, 207),
-                value: widget.controller.currentForm == PokemonType.alolaform,
+                value: widget.controller.currentForm == PokemonAttribute.alolaform,
                 onChanged: (bool value) {
                   setState(() {
                     value
-                        ? widget.controller.currentForm = PokemonType.alolaform
-                        : widget.controller.currentForm = PokemonType.classicform;
+                        ? widget.controller.currentForm = PokemonAttribute.alolaform
+                        : widget.controller.currentForm = PokemonAttribute.classicform;
                   });
                 },
               ),
@@ -206,12 +217,12 @@ class _PokemonCardState extends State<PokemonCard> {
                 inactiveThumbColor: Colors.pink,
                 activeTrackColor: const Color.fromARGB(255, 209, 207, 207),
                 inactiveTrackColor: const Color.fromARGB(255, 209, 207, 207),
-                value: widget.controller.currentGender == PokemonType.male,
+                value: widget.controller.currentGender == PokemonAttribute.male,
                 onChanged: (bool value) {
                   setState(() {
                     value
-                        ? widget.controller.currentGender = PokemonType.male
-                        : widget.controller.currentGender = PokemonType.female;
+                        ? widget.controller.currentGender = PokemonAttribute.male
+                        : widget.controller.currentGender = PokemonAttribute.female;
                   });
                 },
               ),
