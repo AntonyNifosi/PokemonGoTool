@@ -16,6 +16,8 @@ Pokemon _$PokemonFromJson(Map<String, dynamic> json) => Pokemon(
       ),
       json['hasShinyVersion'] as bool,
       json['hasAlolaForm'] as bool,
+      json['hasGalarForm'] as bool,
+      json['hasHisuiForm'] as bool,
     )..captured = Pokemon._fromJson(json['captured'] as List);
 
 Map<String, dynamic> _$PokemonToJson(Pokemon instance) => <String, dynamic>{
@@ -27,6 +29,8 @@ Map<String, dynamic> _$PokemonToJson(Pokemon instance) => <String, dynamic>{
       'category': instance.category,
       'hasShinyVersion': instance.hasShinyVersion,
       'hasAlolaForm': instance.hasAlolaForm,
+      'hasGalarForm': instance.hasGalarForm,
+      'hasHisuiForm': instance.hasHisuiForm,
       'captured': Pokemon._toJson(instance.captured),
     };
 
@@ -44,4 +48,8 @@ const _$ArtworkTypeEnumMap = {
   ArtworkType.femaleshiny: 'femaleshiny',
   ArtworkType.alola: 'alola',
   ArtworkType.alolashiny: 'alolashiny',
+  ArtworkType.galar: 'galar',
+  ArtworkType.galarshiny: 'galarshiny',
+  ArtworkType.hisui: 'hisui',
+  ArtworkType.hisuishiny: 'hisuishiny',
 };

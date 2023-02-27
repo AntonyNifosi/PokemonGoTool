@@ -6,7 +6,7 @@ import 'dart:convert' as convert;
 
 class APIServices {
   static Future<Map<ArtworkType, String>> getArtworks(
-      int pokemonId, bool hasGenderDiff, int pokemonAlolaId) async {
+      int pokemonId, bool hasGenderDiff, int pokemonAlolaId, int pokemonGalarId, int pokemonHisuiId) async {
     Map<ArtworkType, String> artworksList = {};
     artworksList[ArtworkType.male] =
         "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/$pokemonId.png";
@@ -27,6 +27,20 @@ class APIServices {
           "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/$pokemonAlolaId.png";
       artworksList[ArtworkType.alolashiny] =
           "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/shiny/$pokemonAlolaId.png";
+    }
+
+    if (pokemonGalarId > 0) {
+      artworksList[ArtworkType.galar] =
+          "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/$pokemonGalarId.png";
+      artworksList[ArtworkType.galarshiny] =
+          "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/shiny/$pokemonGalarId.png";
+    }
+
+    if (pokemonHisuiId > 0) {
+      artworksList[ArtworkType.hisui] =
+          "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/$pokemonHisuiId.png";
+      artworksList[ArtworkType.hisuishiny] =
+          "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/shiny/$pokemonHisuiId.png";
     }
 
     return artworksList;
@@ -88,9 +102,7 @@ class APIServices {
 
     if (response.statusCode == 200) {
       final data = convert.json.decode(response.body);
-      pokemonsIdByName = {
-        for (var pokemon in data['data']['pokemon_v2_pokemon']) pokemon['name']: pokemon['id']
-      };
+      pokemonsIdByName = {for (var pokemon in data['data']['pokemon_v2_pokemon']) pokemon['name']: pokemon['id']};
     } else {
       print('Request failed with status: ${response.statusCode}.');
     }
@@ -131,20 +143,30 @@ class APIServices {
                 .map((x) => MapEntry(x['pokemon_id'], x['rarity'])));
 
             for (var pokemon in jsonPokemonsListReleasedResponse.values) {
-              bool hasShinyVersion =
-                  jsonPokemonsShinyListResponse.containsKey(pokemon["id"].toString());
+              bool hasShinyVersion = jsonPokemonsShinyListResponse.containsKey(pokemon["id"].toString());
 
-              bool hasAlolaForm =
-                  jsonPokemonsAlolaListResponse.containsKey(pokemon["id"].toString());
+              bool hasAlolaForm = jsonPokemonsAlolaListResponse.containsKey(pokemon["id"].toString());
 
               int pokemonAlolaId = -1;
               if (hasAlolaForm) {
-                pokemonAlolaId =
-                    pokemonsIdByName["${pokemon["name"].toString().toLowerCase()}-alola"]!;
+                pokemonAlolaId = pokemonsIdByName["${pokemon["name"].toString().toLowerCase()}-alola"]!;
               }
+              // Galar Form
+              int pokemonGalarId = -1;
+              bool hasGalarForm = pokemonsIdByName.containsKey("${pokemon["name"].toString().toLowerCase()}-galar");
+              if (hasGalarForm) {
+                pokemonGalarId = pokemonsIdByName["${pokemon["name"].toString().toLowerCase()}-galar"]!;
+              }
+              // Hisui Form
+              int pokemonHisuiId = -1;
+              bool hasHisuiForm = pokemonsIdByName.containsKey("${pokemon["name"].toString().toLowerCase()}-hisui");
+              if (hasHisuiForm) {
+                pokemonHisuiId = pokemonsIdByName["${pokemon["name"].toString().toLowerCase()}-hisui"]!;
+              }
+
               String category = pokemonRarityMap[pokemon["id"]];
-              var artwork = await getArtworks(pokemon["id"],
-                  pokemonsInfosByID[pokemon["id"]]["has_gender_differences"], pokemonAlolaId);
+              var artwork = await getArtworks(pokemon["id"], pokemonsInfosByID[pokemon["id"]]["has_gender_differences"],
+                  pokemonAlolaId, pokemonGalarId, pokemonHisuiId);
               var genderRate = pokemonsInfosByID[pokemon["id"]]["gender_rate"]!;
               var gender = PokemonGender.both;
               if (genderRate == -1) {
@@ -155,14 +177,8 @@ class APIServices {
                 gender = PokemonGender.female;
               }
 
-              pokemonList.add(Pokemon(
-                  pokemon["id"],
-                  pokemonsInfosByID[pokemon["id"]]["french_name"]!,
-                  gender,
-                  category,
-                  artwork,
-                  hasShinyVersion,
-                  hasAlolaForm));
+              pokemonList.add(Pokemon(pokemon["id"], pokemonsInfosByID[pokemon["id"]]["french_name"]!, gender, category,
+                  artwork, hasShinyVersion, hasAlolaForm, hasGalarForm, hasHisuiForm));
             }
           }
         }
@@ -183,14 +199,10 @@ class APIServices {
       var jsonPokemonsAPIVersionsResponse =
           convert.jsonDecode(responsePokemonsAPIVersions.body) as Map<String, dynamic>;
       Map<String, String> versions = {};
-      versions["released_pokemon.json"] =
-          jsonPokemonsAPIVersionsResponse["released_pokemon.json"]["hash_sha256"];
-      versions["shiny_pokemon.json"] =
-          jsonPokemonsAPIVersionsResponse["shiny_pokemon.json"]["hash_sha256"];
-      versions["pokemon_rarity.json"] =
-          jsonPokemonsAPIVersionsResponse["pokemon_rarity.json"]["hash_sha256"];
-      versions["alolan_pokemon.json"] =
-          jsonPokemonsAPIVersionsResponse["alolan_pokemon.json"]["hash_sha256"];
+      versions["released_pokemon.json"] = jsonPokemonsAPIVersionsResponse["released_pokemon.json"]["hash_sha256"];
+      versions["shiny_pokemon.json"] = jsonPokemonsAPIVersionsResponse["shiny_pokemon.json"]["hash_sha256"];
+      versions["pokemon_rarity.json"] = jsonPokemonsAPIVersionsResponse["pokemon_rarity.json"]["hash_sha256"];
+      versions["alolan_pokemon.json"] = jsonPokemonsAPIVersionsResponse["alolan_pokemon.json"]["hash_sha256"];
 
       apiVersion = ApiVersion(versions);
     }

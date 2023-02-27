@@ -14,11 +14,7 @@ class PokemonCard extends StatefulWidget {
 }
 
 class _PokemonCardState extends State<PokemonCard> {
-  List<PokemonAttribute> capturesType = [
-    PokemonAttribute.normal,
-    PokemonAttribute.shiny,
-    PokemonAttribute.lucky
-  ];
+  List<PokemonAttribute> capturesType = [PokemonAttribute.normal, PokemonAttribute.shiny, PokemonAttribute.lucky];
 
   Icon capturedIcon = const Icon(Icons.radio_button_checked_sharp, color: Colors.blue);
   Icon uncapturedIcon = const Icon(Icons.radio_button_checked_sharp);
@@ -114,6 +110,16 @@ class _PokemonCardState extends State<PokemonCard> {
             ? widget.pokemon.artworks[ArtworkType.alolashiny]!
             : widget.pokemon.artworks[ArtworkType.alola]!;
         break;
+      case PokemonAttribute.galarform:
+        artworkUrl = isShinyCaptured
+            ? widget.pokemon.artworks[ArtworkType.galarshiny]!
+            : widget.pokemon.artworks[ArtworkType.galar]!;
+        break;
+      case PokemonAttribute.hisuiform:
+        artworkUrl = isShinyCaptured
+            ? widget.pokemon.artworks[ArtworkType.hisuishiny]!
+            : widget.pokemon.artworks[ArtworkType.hisui]!;
+        break;
       default:
     }
   }
@@ -121,25 +127,19 @@ class _PokemonCardState extends State<PokemonCard> {
   void onCaptureClick() {
     BitArray pokeArray = getPokemonBitArray();
     pokeArray.setBit(PokemonAttribute.normal.index);
-    widget.pokemon.isCaptured(pokeArray)
-        ? widget.pokemon.uncapture(pokeArray)
-        : widget.pokemon.capture(pokeArray);
+    widget.pokemon.isCaptured(pokeArray) ? widget.pokemon.uncapture(pokeArray) : widget.pokemon.capture(pokeArray);
   }
 
   void onShinyCaptureClick() {
     BitArray pokeArray = getPokemonBitArray();
     pokeArray.setBit(PokemonAttribute.shiny.index);
-    widget.pokemon.isCaptured(pokeArray)
-        ? widget.pokemon.uncapture(pokeArray)
-        : widget.pokemon.capture(pokeArray);
+    widget.pokemon.isCaptured(pokeArray) ? widget.pokemon.uncapture(pokeArray) : widget.pokemon.capture(pokeArray);
   }
 
   void onLuckyCaptureClick() {
     BitArray pokeArray = BitArray(PokemonAttribute.size.index);
     pokeArray.setBit(PokemonAttribute.lucky.index);
-    widget.pokemon.isCaptured(pokeArray)
-        ? widget.pokemon.uncapture(pokeArray)
-        : widget.pokemon.capture(pokeArray);
+    widget.pokemon.isCaptured(pokeArray) ? widget.pokemon.uncapture(pokeArray) : widget.pokemon.capture(pokeArray);
   }
 
   @override
@@ -162,8 +162,7 @@ class _PokemonCardState extends State<PokemonCard> {
         child: Column(children: [
           Row(children: [
             Text("${widget.pokemon.name} - #${widget.pokemon.id.toString()}",
-                style: const TextStyle(
-                    fontSize: 15, fontWeight: FontWeight.w400, fontFamily: "Bahnschrift")),
+                style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w400, fontFamily: "Bahnschrift")),
             const Spacer(),
             if (widget.pokemon.hasAlolaForm)
               Switch(
@@ -184,6 +183,52 @@ class _PokemonCardState extends State<PokemonCard> {
                   setState(() {
                     value
                         ? widget.controller.currentForm = PokemonAttribute.alolaform
+                        : widget.controller.currentForm = PokemonAttribute.classicform;
+                  });
+                },
+              ),
+            if (widget.pokemon.hasGalarForm)
+              Switch(
+                thumbIcon: MaterialStateProperty.resolveWith<Icon?>(
+                  (Set<MaterialState> states) {
+                    if (states.contains(MaterialState.selected)) {
+                      return const Icon(Icons.shield_outlined);
+                    }
+                    return const Icon(Icons.shield_outlined);
+                  },
+                ),
+                activeColor: Color.fromARGB(255, 175, 124, 29),
+                inactiveThumbColor: const Color.fromARGB(255, 85, 87, 86),
+                activeTrackColor: const Color.fromARGB(255, 209, 207, 207),
+                inactiveTrackColor: const Color.fromARGB(255, 209, 207, 207),
+                value: widget.controller.currentForm == PokemonAttribute.galarform,
+                onChanged: (bool value) {
+                  setState(() {
+                    value
+                        ? widget.controller.currentForm = PokemonAttribute.galarform
+                        : widget.controller.currentForm = PokemonAttribute.classicform;
+                  });
+                },
+              ),
+            if (widget.pokemon.hasHisuiForm)
+              Switch(
+                thumbIcon: MaterialStateProperty.resolveWith<Icon?>(
+                  (Set<MaterialState> states) {
+                    if (states.contains(MaterialState.selected)) {
+                      return const Icon(Icons.volcano_outlined);
+                    }
+                    return const Icon(Icons.volcano_outlined);
+                  },
+                ),
+                activeColor: Color.fromARGB(255, 219, 49, 19),
+                inactiveThumbColor: const Color.fromARGB(255, 85, 87, 86),
+                activeTrackColor: const Color.fromARGB(255, 209, 207, 207),
+                inactiveTrackColor: const Color.fromARGB(255, 209, 207, 207),
+                value: widget.controller.currentForm == PokemonAttribute.hisuiform,
+                onChanged: (bool value) {
+                  setState(() {
+                    value
+                        ? widget.controller.currentForm = PokemonAttribute.hisuiform
                         : widget.controller.currentForm = PokemonAttribute.classicform;
                   });
                 },
