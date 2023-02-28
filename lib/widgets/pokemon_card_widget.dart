@@ -220,7 +220,7 @@ class _PokemonCardState extends State<PokemonCard> {
                     return const Icon(Icons.volcano_outlined);
                   },
                 ),
-                activeColor: Color.fromARGB(255, 219, 49, 19),
+                activeColor: const Color.fromARGB(255, 219, 49, 19),
                 inactiveThumbColor: const Color.fromARGB(255, 85, 87, 86),
                 activeTrackColor: const Color.fromARGB(255, 209, 207, 207),
                 inactiveTrackColor: const Color.fromARGB(255, 209, 207, 207),

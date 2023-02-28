@@ -116,70 +116,65 @@ class APIServices {
     var pokemonsReleasedUrl = Uri.https("pogoapi.net", "/api/v1/released_pokemon.json");
     var pokemonsShinyUrl = Uri.https("pogoapi.net", "/api/v1/shiny_pokemon.json");
     var pokemonsCategoryUrl = Uri.https("pogoapi.net", "/api/v1/pokemon_rarity.json");
-    var pokemonsAlolaUrl = Uri.https("pogoapi.net", "/api/v1/alolan_pokemon.json");
 
     var responsePokemonsReleasedList = await http.get(pokemonsReleasedUrl);
     var responsePokemonsShinyList = await http.get(pokemonsShinyUrl);
     var responsePokemonsMythicList = await http.get(pokemonsCategoryUrl);
-    var responsePokemonsAlolaList = await http.get(pokemonsAlolaUrl);
 
     if (responsePokemonsReleasedList.statusCode == 200) {
       if (responsePokemonsShinyList.statusCode == 200) {
         if (responsePokemonsMythicList.statusCode == 200) {
-          if (responsePokemonsAlolaList.statusCode == 200) {
-            var jsonPokemonsListReleasedResponse =
-                convert.jsonDecode(responsePokemonsReleasedList.body) as Map<String, dynamic>;
-            var jsonPokemonsShinyListResponse =
-                convert.jsonDecode(responsePokemonsShinyList.body) as Map<String, dynamic>;
-            var jsonPokemonsMythicListResponse =
-                convert.jsonDecode(responsePokemonsMythicList.body) as Map<String, dynamic>;
-            var jsonPokemonsAlolaListResponse =
-                convert.jsonDecode(responsePokemonsAlolaList.body) as Map<String, dynamic>;
+          var jsonPokemonsListReleasedResponse =
+              convert.jsonDecode(responsePokemonsReleasedList.body) as Map<String, dynamic>;
+          var jsonPokemonsShinyListResponse =
+              convert.jsonDecode(responsePokemonsShinyList.body) as Map<String, dynamic>;
+          var jsonPokemonsMythicListResponse =
+              convert.jsonDecode(responsePokemonsMythicList.body) as Map<String, dynamic>;
 
-            Map<String, int> pokemonsIdByName = await getPokemonsNameById();
+          Map<String, int> pokemonsIdByName = await getPokemonsNameById();
 
-            final pokemonRarityMap = Map.fromEntries(jsonPokemonsMythicListResponse.values
-                .expand((x) => x)
-                .map((x) => MapEntry(x['pokemon_id'], x['rarity'])));
+          final pokemonRarityMap = Map.fromEntries(jsonPokemonsMythicListResponse.values
+              .expand((x) => x)
+              .map((x) => MapEntry(x['pokemon_id'], x['rarity'])));
 
-            for (var pokemon in jsonPokemonsListReleasedResponse.values) {
-              bool hasShinyVersion = jsonPokemonsShinyListResponse.containsKey(pokemon["id"].toString());
+          for (var pokemon in jsonPokemonsListReleasedResponse.values) {
+            bool hasShinyVersion = jsonPokemonsShinyListResponse.containsKey(pokemon["id"].toString());
 
-              bool hasAlolaForm = jsonPokemonsAlolaListResponse.containsKey(pokemon["id"].toString());
-
-              int pokemonAlolaId = -1;
-              if (hasAlolaForm) {
-                pokemonAlolaId = pokemonsIdByName["${pokemon["name"].toString().toLowerCase()}-alola"]!;
-              }
-              // Galar Form
-              int pokemonGalarId = -1;
-              bool hasGalarForm = pokemonsIdByName.containsKey("${pokemon["name"].toString().toLowerCase()}-galar");
-              if (hasGalarForm) {
-                pokemonGalarId = pokemonsIdByName["${pokemon["name"].toString().toLowerCase()}-galar"]!;
-              }
-              // Hisui Form
-              int pokemonHisuiId = -1;
-              bool hasHisuiForm = pokemonsIdByName.containsKey("${pokemon["name"].toString().toLowerCase()}-hisui");
-              if (hasHisuiForm) {
-                pokemonHisuiId = pokemonsIdByName["${pokemon["name"].toString().toLowerCase()}-hisui"]!;
-              }
-
-              String category = pokemonRarityMap[pokemon["id"]];
-              var artwork = await getArtworks(pokemon["id"], pokemonsInfosByID[pokemon["id"]]["has_gender_differences"],
-                  pokemonAlolaId, pokemonGalarId, pokemonHisuiId);
-              var genderRate = pokemonsInfosByID[pokemon["id"]]["gender_rate"]!;
-              var gender = PokemonGender.both;
-              if (genderRate == -1) {
-                gender = PokemonGender.genderless;
-              } else if (genderRate == 0) {
-                gender = PokemonGender.male;
-              } else if (genderRate == 8) {
-                gender = PokemonGender.female;
-              }
-
-              pokemonList.add(Pokemon(pokemon["id"], pokemonsInfosByID[pokemon["id"]]["french_name"]!, gender, category,
-                  artwork, hasShinyVersion, hasAlolaForm, hasGalarForm, hasHisuiForm));
+            int pokemonAlolaId = -1;
+            bool hasAlolaForm = pokemonsIdByName.containsKey("${pokemon["name"].toString().toLowerCase()}-alola");
+            if (hasAlolaForm) {
+              pokemonAlolaId = pokemonsIdByName["${pokemon["name"].toString().toLowerCase()}-alola"]!;
             }
+            // Galar Form
+            int pokemonGalarId = -1;
+            bool hasGalarForm = pokemonsIdByName.containsKey("${pokemon["name"].toString().toLowerCase()}-galar");
+            if (hasGalarForm) {
+              pokemonGalarId = pokemonsIdByName["${pokemon["name"].toString().toLowerCase()}-galar"]!;
+            } else {
+              hasGalarForm = pokemonsIdByName.containsKey("${pokemon["name"].toString().toLowerCase()}-galar-standar");
+            }
+            // Hisui Form
+            int pokemonHisuiId = -1;
+            bool hasHisuiForm = pokemonsIdByName.containsKey("${pokemon["name"].toString().toLowerCase()}-hisui");
+            if (hasHisuiForm) {
+              pokemonHisuiId = pokemonsIdByName["${pokemon["name"].toString().toLowerCase()}-hisui"]!;
+            }
+
+            String category = pokemonRarityMap[pokemon["id"]];
+            var artwork = await getArtworks(pokemon["id"], pokemonsInfosByID[pokemon["id"]]["has_gender_differences"],
+                pokemonAlolaId, pokemonGalarId, pokemonHisuiId);
+            var genderRate = pokemonsInfosByID[pokemon["id"]]["gender_rate"]!;
+            var gender = PokemonGender.both;
+            if (genderRate == -1) {
+              gender = PokemonGender.genderless;
+            } else if (genderRate == 0) {
+              gender = PokemonGender.male;
+            } else if (genderRate == 8) {
+              gender = PokemonGender.female;
+            }
+
+            pokemonList.add(Pokemon(pokemon["id"], pokemonsInfosByID[pokemon["id"]]["french_name"]!, gender, category,
+                artwork, hasShinyVersion, hasAlolaForm, hasGalarForm, hasHisuiForm));
           }
         }
       }

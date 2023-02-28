@@ -40,8 +40,7 @@ class _PokemonPageState extends State<PokemonPage> {
       (value) {
         pokemonsDisplayedList = value;
         controllerCardList = List.generate(value.length, (index) {
-          var card =
-              PokemonCardController(PokemonAttribute.init, PokemonAttribute.init, value[index]);
+          var card = PokemonCardController(PokemonAttribute.init, PokemonAttribute.init, value[index]);
           controllerMap[value[index]] = card;
           return card;
         });
@@ -119,15 +118,32 @@ class _PokemonPageState extends State<PokemonPage> {
                                 pokemonsDisplayedList[index],
                                 () {
                                   applyFilter();
-                                  pokemonsFullList
-                                      .then((value) => PokemonService.savePokemons(value));
+                                  pokemonsFullList.then((value) => PokemonService.savePokemons(value));
                                 },
                                 controllerMap[pokemonsDisplayedList[index]]!,
                               );
                             }))
                   ]);
                 } else {
-                  return const Text("NULL");
+                  return Center(
+                    child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: const [
+                          Text("Loading all Pokemons ...", style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold)),
+                          SizedBox(
+                            height: 30,
+                          ),
+                          SizedBox(
+                            height: 100,
+                            width: 100,
+                            child: CircularProgressIndicator(
+                              color: Color.fromARGB(255, 16, 170, 244),
+                              strokeWidth: 10,
+                            ),
+                          )
+                        ]),
+                  );
                 }
               },
             ),
@@ -220,8 +236,7 @@ class _PokemonPageState extends State<PokemonPage> {
                     (luckyVersionAvailable == null && pokemon.category == 'Mythic') ||
                     (luckyVersionAvailable == false)) &&
                 (search.isEmpty ||
-                    (pokemon.name.toLowerCase().contains(search) ||
-                        pokemon.id.toString().contains(search)));
+                    (pokemon.name.toLowerCase().contains(search) || pokemon.id.toString().contains(search)));
           }).toList());
     });
   }
