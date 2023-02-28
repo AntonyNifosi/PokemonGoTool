@@ -2,18 +2,7 @@ import 'package:bit_array/bit_array.dart';
 import 'package:json_annotation/json_annotation.dart';
 part 'pokemon.g.dart';
 
-enum ArtworkType {
-  male,
-  female,
-  maleshiny,
-  femaleshiny,
-  alola,
-  alolashiny,
-  galar,
-  galarshiny,
-  hisui,
-  hisuishiny
-}
+enum ArtworkType { male, female, maleshiny, femaleshiny, alola, alolashiny, galar, galarshiny, hisui, hisuishiny }
 
 enum PokemonAttribute {
   init,
@@ -35,6 +24,7 @@ enum PokemonGender { male, female, genderless, both }
 @JsonSerializable()
 class Pokemon {
   int id;
+  int? generationId;
   String name;
   PokemonGender gender;
   Map<ArtworkType, String> artworks;
@@ -65,7 +55,7 @@ class Pokemon {
     return array;
   }
 
-  Pokemon(this.id, this.name, this.gender, this.category, this.artworks, this.hasShinyVersion,
+  Pokemon(this.id, this.generationId, this.name, this.gender, this.category, this.artworks, this.hasShinyVersion,
       this.hasAlolaForm, this.hasGalarForm, this.hasHisuiForm);
 
   PokemonGender getGender() {
@@ -119,8 +109,7 @@ class Pokemon {
     return formsList;
   }
 
-  bool _isCapturedSpecific(
-      List<PokemonAttribute> genders, List<PokemonAttribute> forms, PokemonAttribute captureType) {
+  bool _isCapturedSpecific(List<PokemonAttribute> genders, List<PokemonAttribute> forms, PokemonAttribute captureType) {
     bool isCaptured = true;
     if (forms.isNotEmpty) {
       for (var form in forms) {

@@ -8,6 +8,7 @@ part of 'pokemon.dart';
 
 Pokemon _$PokemonFromJson(Map<String, dynamic> json) => Pokemon(
       json['id'] as int,
+      json['generationId'] as int?,
       json['name'] as String,
       $enumDecode(_$PokemonGenderEnumMap, json['gender']),
       json['category'] as String,
@@ -22,6 +23,7 @@ Pokemon _$PokemonFromJson(Map<String, dynamic> json) => Pokemon(
 
 Map<String, dynamic> _$PokemonToJson(Pokemon instance) => <String, dynamic>{
       'id': instance.id,
+      'generationId': instance.generationId,
       'name': instance.name,
       'gender': _$PokemonGenderEnumMap[instance.gender]!,
       'artworks': instance.artworks

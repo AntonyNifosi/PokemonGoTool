@@ -57,8 +57,8 @@ class PokemonService {
     for (var pokemon in onlineList) {
       var newPokemon = pokemon; // We take the pokemon return by the API
       if (localPokemonMap.containsKey(pokemon.id)) {
-        newPokemon.captured = localPokemonMap[pokemon.id]!
-            .captured; // If we have local version of the pokemon we save the local captures
+        newPokemon.captured =
+            localPokemonMap[pokemon.id]!.captured; // If we have local version of the pokemon we save the local captures
       }
       newPokemonList.add(newPokemon);
     }

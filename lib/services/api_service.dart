@@ -57,6 +57,7 @@ class APIServices {
           pokemon_v2_pokemonspecies(where: {pokemon_v2_pokemonspeciesnames: {language_id: {_eq: 5}}}) {
             id
             gender_rate
+            generation_id
             has_gender_differences
             pokemon_v2_pokemonspeciesnames(where: {language_id: {_eq: 5}}) {
               name
@@ -74,7 +75,8 @@ class APIServices {
           pokemon['id']: {
             'french_name': pokemon['pokemon_v2_pokemonspeciesnames'][0]['name'],
             'gender_rate': pokemon['gender_rate'],
-            'has_gender_differences': pokemon['has_gender_differences']
+            'has_gender_differences': pokemon['has_gender_differences'],
+            'generation_id': pokemon['generation_id']
           }
       };
     } else {
@@ -140,6 +142,7 @@ class APIServices {
           for (var pokemon in jsonPokemonsListReleasedResponse.values) {
             bool hasShinyVersion = jsonPokemonsShinyListResponse.containsKey(pokemon["id"].toString());
 
+            // Alola Form
             int pokemonAlolaId = -1;
             bool hasAlolaForm = pokemonsIdByName.containsKey("${pokemon["name"].toString().toLowerCase()}-alola");
             if (hasAlolaForm) {
@@ -172,9 +175,9 @@ class APIServices {
             } else if (genderRate == 8) {
               gender = PokemonGender.female;
             }
-
-            pokemonList.add(Pokemon(pokemon["id"], pokemonsInfosByID[pokemon["id"]]["french_name"]!, gender, category,
-                artwork, hasShinyVersion, hasAlolaForm, hasGalarForm, hasHisuiForm));
+            var generationId = pokemonsInfosByID[pokemon["id"]]["generation_id"]!;
+            pokemonList.add(Pokemon(pokemon["id"], generationId, pokemonsInfosByID[pokemon["id"]]["french_name"]!,
+                gender, category, artwork, hasShinyVersion, hasAlolaForm, hasGalarForm, hasHisuiForm));
           }
         }
       }
@@ -198,6 +201,7 @@ class APIServices {
       versions["shiny_pokemon.json"] = jsonPokemonsAPIVersionsResponse["shiny_pokemon.json"]["hash_sha256"];
       versions["pokemon_rarity.json"] = jsonPokemonsAPIVersionsResponse["pokemon_rarity.json"]["hash_sha256"];
       versions["alolan_pokemon.json"] = jsonPokemonsAPIVersionsResponse["alolan_pokemon.json"]["hash_sha256"];
+      versions["param_generation_id"] = "28/02/2023";
 
       apiVersion = ApiVersion(versions);
     }

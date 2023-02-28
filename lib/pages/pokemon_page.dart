@@ -28,7 +28,16 @@ class _PokemonPageState extends State<PokemonPage> {
     "Shiny Version Available": false,
     "Lucky Version Available": false,
     "Shiny Captured": false,
-    "Lucky Captured": false
+    "Lucky Captured": false,
+    "Generation 1": false,
+    "Generation 2": false,
+    "Generation 3": false,
+    "Generation 4": false,
+    "Generation 5": false,
+    "Generation 6": false,
+    "Generation 7": false,
+    "Generation 8": false,
+    "Generation 9": false
   };
   String searchName = "";
   @override
@@ -219,6 +228,15 @@ class _PokemonPageState extends State<PokemonPage> {
             final luckyCaptured = filterValues['Lucky Captured'];
             final shinyVersionAvailable = filterValues['Shiny Version Available'];
             final luckyVersionAvailable = filterValues['Lucky Version Available'];
+            final generation1 = filterValues['Generation 1'];
+            final generation2 = filterValues['Generation 2'];
+            final generation3 = filterValues['Generation 3'];
+            final generation4 = filterValues['Generation 4'];
+            final generation5 = filterValues['Generation 5'];
+            final generation6 = filterValues['Generation 6'];
+            final generation7 = filterValues['Generation 7'];
+            final generation8 = filterValues['Generation 8'];
+            final generation9 = filterValues['Generation 9'];
 
             return ((captured == true && pokemon.isNormalCaptured()) ||
                     (captured == null && !pokemon.isNormalCaptured()) ||
@@ -235,6 +253,33 @@ class _PokemonPageState extends State<PokemonPage> {
                 ((luckyVersionAvailable == true && pokemon.category != 'Mythic') ||
                     (luckyVersionAvailable == null && pokemon.category == 'Mythic') ||
                     (luckyVersionAvailable == false)) &&
+                ((generation1 == true && pokemon.generationId == 1) ||
+                    (generation1 == null && pokemon.generationId != 1) ||
+                    (generation1 == false)) &&
+                ((generation2 == true && pokemon.generationId == 2) ||
+                    (generation2 == null && pokemon.generationId != 2) ||
+                    (generation2 == false)) &&
+                ((generation3 == true && pokemon.generationId == 3) ||
+                    (generation3 == null && pokemon.generationId != 3) ||
+                    (generation3 == false)) &&
+                ((generation4 == true && pokemon.generationId == 4) ||
+                    (generation4 == null && pokemon.generationId != 4) ||
+                    (generation4 == false)) &&
+                ((generation5 == true && pokemon.generationId == 5) ||
+                    (generation5 == null && pokemon.generationId != 5) ||
+                    (generation5 == false)) &&
+                ((generation6 == true && pokemon.generationId == 6) ||
+                    (generation6 == null && pokemon.generationId != 6) ||
+                    (generation6 == false)) &&
+                ((generation7 == true && pokemon.generationId == 7) ||
+                    (generation7 == null && pokemon.generationId != 7) ||
+                    (generation7 == false)) &&
+                ((generation8 == true && pokemon.generationId == 8) ||
+                    (generation8 == null && pokemon.generationId != 8) ||
+                    (generation8 == false)) &&
+                ((generation9 == true && pokemon.generationId == 9) ||
+                    (generation9 == null && pokemon.generationId != 9) ||
+                    (generation9 == false)) &&
                 (search.isEmpty ||
                     (pokemon.name.toLowerCase().contains(search) || pokemon.id.toString().contains(search)));
           }).toList());
