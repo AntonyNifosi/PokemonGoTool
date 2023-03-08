@@ -14,7 +14,11 @@ class PokemonCard extends StatefulWidget {
 }
 
 class _PokemonCardState extends State<PokemonCard> {
-  List<PokemonAttribute> capturesType = [PokemonAttribute.normal, PokemonAttribute.shiny, PokemonAttribute.lucky];
+  List<PokemonAttribute> capturesType = [
+    PokemonAttribute.normal,
+    PokemonAttribute.shiny,
+    PokemonAttribute.lucky
+  ];
 
   Icon capturedIcon = const Icon(Icons.radio_button_checked_sharp, color: Colors.blue);
   Icon uncapturedIcon = const Icon(Icons.radio_button_checked_sharp);
@@ -127,19 +131,25 @@ class _PokemonCardState extends State<PokemonCard> {
   void onCaptureClick() {
     BitArray pokeArray = getPokemonBitArray();
     pokeArray.setBit(PokemonAttribute.normal.index);
-    widget.pokemon.isCaptured(pokeArray) ? widget.pokemon.uncapture(pokeArray) : widget.pokemon.capture(pokeArray);
+    widget.pokemon.isCaptured(pokeArray)
+        ? widget.pokemon.uncapture(pokeArray)
+        : widget.pokemon.capture(pokeArray);
   }
 
   void onShinyCaptureClick() {
     BitArray pokeArray = getPokemonBitArray();
     pokeArray.setBit(PokemonAttribute.shiny.index);
-    widget.pokemon.isCaptured(pokeArray) ? widget.pokemon.uncapture(pokeArray) : widget.pokemon.capture(pokeArray);
+    widget.pokemon.isCaptured(pokeArray)
+        ? widget.pokemon.uncapture(pokeArray)
+        : widget.pokemon.capture(pokeArray);
   }
 
   void onLuckyCaptureClick() {
     BitArray pokeArray = BitArray(PokemonAttribute.size.index);
     pokeArray.setBit(PokemonAttribute.lucky.index);
-    widget.pokemon.isCaptured(pokeArray) ? widget.pokemon.uncapture(pokeArray) : widget.pokemon.capture(pokeArray);
+    widget.pokemon.isCaptured(pokeArray)
+        ? widget.pokemon.uncapture(pokeArray)
+        : widget.pokemon.capture(pokeArray);
   }
 
   @override
@@ -162,7 +172,8 @@ class _PokemonCardState extends State<PokemonCard> {
         child: Column(children: [
           Row(children: [
             Text("${widget.pokemon.name} - #${widget.pokemon.id.toString()}",
-                style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w400, fontFamily: "Bahnschrift")),
+                style: const TextStyle(
+                    fontSize: 15, fontWeight: FontWeight.w400, fontFamily: "Bahnschrift")),
             const Spacer(),
             if (widget.pokemon.hasAlolaForm)
               Switch(
@@ -197,7 +208,7 @@ class _PokemonCardState extends State<PokemonCard> {
                     return const Icon(Icons.shield_outlined);
                   },
                 ),
-                activeColor: Color.fromARGB(255, 175, 124, 29),
+                activeColor: const Color.fromARGB(255, 175, 124, 29),
                 inactiveThumbColor: const Color.fromARGB(255, 85, 87, 86),
                 activeTrackColor: const Color.fromARGB(255, 209, 207, 207),
                 inactiveTrackColor: const Color.fromARGB(255, 209, 207, 207),
@@ -276,6 +287,7 @@ class _PokemonCardState extends State<PokemonCard> {
             child: Image.network(
               artworkUrl,
               filterQuality: FilterQuality.medium,
+              errorBuilder: (context, error, stackTrace) => const Text("Pas d'image disponible"),
             ),
           ),
           SizedBox(
